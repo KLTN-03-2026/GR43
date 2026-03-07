@@ -1,0 +1,38 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - "backend/**"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0
+      - name: Restore
+        run: dotnet restore backend
+      - name: Build
+        run: dotnet build backend --configuration Release
+      - name: Publish
+        run: dotnet publish backend -c Release -o publish
+      - name: Build Docker image
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/backend:latest ./backend
+      - name: Login GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Push Image
+        run: |
+          docker push ghcr.io/${{ github.repository }}/backend:latest
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+      - name: Deploy
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml

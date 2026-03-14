@@ -14,4 +14,8 @@
         <ProjectReference Include="..\DoAnTotNghiep.Domain\DoAnTotNghiep.Domain.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Admin\" />
+    </ItemGroup>
+
 </Project>

@@ -45,7 +45,7 @@ app.MapHealthChecks("/health", new HealthCheckOptions
         var response = new
         {
             schemaVersion = 1,
-            label = "server",
+            label = "Server",
             message = isHealthy ? "online" : "offline",
             color = isHealthy ? "brightgreen" : "red"
         };

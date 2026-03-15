@@ -1,7 +1,7 @@
 # Hệ Thống Ghép Đôi & Phát Hiện Lừa Đảo / Matchmaking & Scam Detection
 
 [![Backend CI/CD](https://github.com/hiamchubbybear/DATN2026-STT43/actions/workflows/backend-ci.yml/badge.svg?branch=main)](https://github.com/hiamchubbybear/DATN2026-STT43/actions/workflows/backend-ci.yml)
-![Realtime server status](https://img.shields.io/endpoint?url=https://datn.chessy.dev/health&style=for-the-badge&cacheSeconds=60)
+![Server Status](https://img.shields.io/endpoint?url=https://datn.chessy.dev/health&logo=statuspage&logoColor=white&cacheSeconds=60)
 
 ## Bản dịch ngôn ngữ / Language editions
 

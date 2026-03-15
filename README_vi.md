@@ -2,7 +2,7 @@
 
 ## Trạng thái build & server
 - Backend API build: passing / pipeline đang chạy ổn định.
-- Realtime server: ![Realtime server status](https://img.shields.io/endpoint?url=https://datn.chessy.dev/health&style=flat-square&cacheSeconds=60)
+- Trạng thái server: ![Server Status](https://img.shields.io/endpoint?url=https://datn.chessy.dev/health&logo=statuspage&logoColor=white&cacheSeconds=60)
 
 ## API & Trạng thái Server
 - **Base URL**: `https://datn.chessy.dev`

@@ -81,4 +81,4 @@ jobs:
           kubectl apply -f k8s/deployments.yml
 
           # Rollout restart để pull image mới nhất từ GHCR
-          kubectl rollout restart deployment/datn2026-stt43-backend
+          kubectl rollout restart deployment/datn2026-stt43-backend -n datn2026-stt43

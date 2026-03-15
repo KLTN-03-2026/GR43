@@ -17,7 +17,7 @@ spec:
         - name: backend
           image: ghcr.io/hiamchubbybear/datn2026-stt43-backend:latest
           ports:
-            - containerPort: 5050
+            - containerPort: 8080
           envFrom:
             - configMapRef:
                 name: backend-config

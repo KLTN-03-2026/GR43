@@ -1,13 +1,14 @@
 using DoAnTotNghiep.Domain.Enum;
+using MediatR;
 
 namespace DoAnTotNghiep.Application.Users;
 
-public class CreateUserRequest
+public class CreateUserRequest : IRequest<Guid>
 {
-    public string Username { get; set; }
-    public int Age { get; set; }
-    public Gender Gender { get; set; }
-    public string Email { get; set; }
-    public string Phone { get; set; }
-    public string Password { get; set; }
+    public required string Username { get; set; }
+    public required int Age { get; set; }
+    public required Gender Gender { get; set; }
+    public required string Email { get; set; }
+    public required string Phone { get; set; }
+    public required string Password { get; set; }
 }

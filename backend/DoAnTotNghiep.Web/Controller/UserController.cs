@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using DoAnTotNghiep.Application.Users;
+using MediatR;
 
 namespace DoAnTotNghiep.Web.Controllers;
 
@@ -7,17 +8,17 @@ namespace DoAnTotNghiep.Web.Controllers;
 [Route("api/users")]
 public class UserController : ControllerBase
 {
-    private readonly UserService _userService;
+    private readonly IMediator _mediator;
 
-    public UserController(UserService userService)
+    public UserController(IMediator mediator)
     {
-        _userService = userService;
+        _mediator = mediator;
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateUser(CreateUserRequest request)
     {
-        var userId = await _userService.CreateUser(request);
+        var userId = await _mediator.Send(request);
 
         return Ok(new
         {

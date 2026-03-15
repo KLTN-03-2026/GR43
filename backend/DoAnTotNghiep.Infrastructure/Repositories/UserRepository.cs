@@ -15,12 +15,7 @@ public class UserRepository : IUserRepository
 
     public async Task Create(Users user)
     {
-        await _users.Indexes.CreateOneAsync(
-            new CreateIndexModel<Users>(
-                Builders<Users>.IndexKeys.Ascending(x => x.Email),
-                new CreateIndexOptions { Unique = true }
-            )
-        );
+        await _users.InsertOneAsync(user);
     }
 
     public async Task<Users?> GetByEmail(string email)

@@ -86,6 +86,32 @@ Call system: WebRTC + STUN/TURN + Coturn.
 4. Push: `git push origin feature/swipe-api`.  
 5. Tạo PR từ feature vào develop.
 
+## Chức năng chính
+
+### Đối với Người dùng
+- **Đăng ký & Hồ sơ**: Tạo tài khoản và quản lý thông tin cá nhân.
+- **Ghép đôi (Swipe)**: Hệ thống gợi ý và ghép đôi người dùng linh hoạt.
+- **Chat thời gian thực**: Nhắn tin tức thì qua WebSocket.
+- **Cuộc gọi Video/Audio**: Gọi điện bảo mật tích hợp WebRTC.
+- **Phát hiện lừa đảo**: Bảo vệ người dùng bằng AI, cảnh báo hành vi nghi vấn.
+
+### Đối với Quản trị viên (Admin)
+- **Quản lý người dùng**: Theo dõi và quản lý tài khoản người dùng hệ thống.
+- **Báo cáo lừa đảo**: Xem xét và xử lý các báo cáo từ mô hình ML.
+- **Giám sát hệ thống**: Theo dõi trạng thái server và lưu lượng cuộc gọi.
+
+## Danh sách API Endpoints
+
+### Xác thực & Người dùng
+- `POST /api/users`: Đăng ký tài khoản mới.
+- `POST /api/auth/login`: (Dự kiến) Đăng nhập hệ thống.
+- `GET /api/users/{id}`: (Dự kiến) Lấy thông tin chi tiết hồ sơ.
+
+### Ghép đôi & Real-time
+- `GET /api/swipe/recommendations`: (Dự kiến) Lấy danh sách gợi ý ghép đôi.
+- `POST /api/swipe/action`: (Dự kiến) Thả tim hoặc Bỏ qua hồ sơ.
+- `GET /health`: Kiểm tra trạng thái hệ thống (MongoDB, Redis, API).
+
 ## Folder structure
 ```
 repo

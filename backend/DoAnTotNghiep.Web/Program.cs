@@ -1,22 +1,59 @@
-using DoAnTotNghiep.Application.Users;
-using DoAnTotNghiep.Domain.Users;
+using DoAnTotNghiep.Application;
+using DoAnTotNghiep.Infrastructure;
 using DoAnTotNghiep.Infrastructure.Persistence;
-using DoAnTotNghiep.Infrastructure.Persistence.Persistence;
-using DoAnTotNghiep.Infrastructure.Repositories;
 using DoAnTotNghiep.Web;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var mongoSettings = builder.Configuration
-    .GetSection("MongoDb")
-    .Get<MongoSettings>();
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
+    .CreateLogger();
 
+builder.Host.UseSerilog();
+
+var mongoSettings = builder.Configuration.GetSection("MongoDb").Get<MongoSettings>();
+var redisSettings = builder.Configuration.GetSection("Redis").Get<RedisSettings>();
+
+builder.Services.AddApplication();
 builder.Services.AddSingleton(mongoSettings!);
+builder.Services.AddSingleton(redisSettings!);
 builder.Services.AddSingleton<MongoDbContext>();
-builder.Services.AddInfrastructure();
+
+builder.Services.AddHealthChecks()
+    .AddMongoDb(_ => new MongoDB.Driver.MongoClient(mongoSettings!.ConnectionString), name: "mongodb")
+    .AddRedis(redisSettings!.ConnectionString, name: "redis");
+
+builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
+
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
+app.MapHealthChecks("/health");
 app.MapControllers();
 app.UseHttpsRedirection();
 
-app.Run();
+// Initialize Database
+using (var scope = app.Services.CreateScope())
+{
+    var initializer = scope.ServiceProvider.GetRequiredService<MongoDbInitializer>();
+    await initializer.InitializeAsync();
+}
+
+try
+{
+    Log.Information("Starting web host");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

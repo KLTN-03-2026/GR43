@@ -1,7 +1,6 @@
 namespace DoAnTotNghiep.Infrastructure.Persistence;
 
-public class MongoSettings
+public class RedisSettings
 {
     public string ConnectionString { get; set; } = null!;
-    public string Database { get; set; } = null!;
 }

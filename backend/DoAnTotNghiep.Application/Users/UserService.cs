@@ -1,8 +1,9 @@
 using DoAnTotNghiep.Domain.Users;
+using MediatR;
 
 namespace DoAnTotNghiep.Application.Users
 {
-    public class UserService
+    public class UserService : IRequestHandler<CreateUserRequest, Guid>
     {
         private readonly IUserRepository _userRepository;
 
@@ -11,7 +12,7 @@ namespace DoAnTotNghiep.Application.Users
             _userRepository = userRepository;
         }
 
-        public async Task<Guid> CreateUser(CreateUserRequest request)
+        public async Task<Guid> Handle(CreateUserRequest request, CancellationToken cancellationToken)
         {
             var existing = await _userRepository.GetByEmail(request.Email);
 

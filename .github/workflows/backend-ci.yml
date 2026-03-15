@@ -70,6 +70,9 @@ jobs:
           MONGODB_CONNECTION_STRING: ${{ secrets.MONGODB_CONNECTION_STRING }}
           REDIS_CONNECTION_STRING: ${{ secrets.REDIS_CONNECTION_STRING }}
         run: |
+          # Đảm bảo namespace tồn tại
+          kubectl create namespace datn2026-stt43 --dry-run=client -o yaml | kubectl apply -f -
+
           # Inject secrets into manifests
           envsubst < k8s/secret.yml > k8s/secret_ready.yml
 

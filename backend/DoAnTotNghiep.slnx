@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="DoAnTotNghiep.Application/DoAnTotNghiep.Application.csproj" />
+  <Project Path="DoAnTotNghiep.Domain/DoAnTotNghiep.Domain.csproj" />
+  <Project Path="DoAnTotNghiep.Infrastructure/DoAnTotNghiep.Infrastructure.csproj" />
+  <Project Path="DoAnTotNghiep.Web/DoAnTotNghiep.Web.csproj" />
+</Solution>

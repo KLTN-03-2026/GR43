@@ -3,7 +3,7 @@
 ## Build & Server Status
 
 - Backend API build: passing.
-- Realtime + WebRTC server: online, handling WebSocket and call traffic.
+- Realtime + WebRTC server: ![Realtime server status](https://img.shields.io/endpoint?url=https://datn.chessy.dev/health&style=flat-square&cacheSeconds=60)
 
 ## API & Server Status
 - **Base URL**: `https://datn.chessy.dev`

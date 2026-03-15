@@ -2,6 +2,7 @@ using DoAnTotNghiep.Application;
 using DoAnTotNghiep.Infrastructure;
 using DoAnTotNghiep.Infrastructure.Persistence;
 using DoAnTotNghiep.Web;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,7 +36,22 @@ var app = builder.Build();
 app.UseSerilogRequestLogging();
 app.UseDefaultFiles();
 app.UseStaticFiles();
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        context.Response.ContentType = "application/json";
+        var isHealthy = report.Status == Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus.Healthy;
+        var response = new
+        {
+            schemaVersion = 1,
+            label = "server",
+            message = isHealthy ? "online" : "offline",
+            color = isHealthy ? "brightgreen" : "red"
+        };
+        await context.Response.WriteAsJsonAsync(response);
+    }
+});
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 app.UseHttpsRedirection();

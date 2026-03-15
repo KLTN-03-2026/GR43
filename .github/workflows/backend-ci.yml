@@ -15,8 +15,8 @@ permissions:
   packages: write
 
 jobs:
-  build-and-deploy:
-    runs-on: self-hosted
+  build-and-push:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,26 +49,36 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/datn2026-stt43-backend:latest
 
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v3
+  deploy:
+    runs-on: self-hosted
+    needs: build-and-push
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set Kubernetes Context
-        uses: azure/k8s-set-context@v3
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: Setup kubectl
+        run: |
+          # Kiểm tra kubectl có tồn tại không
+          if ! command -v kubectl &> /dev/null
+          then
+              echo "Error: kubectl not found on self-hosted runner. Please install it."
+              exit 1
+          fi
 
       - name: Deploy to Kubernetes
         env:
           MONGODB_CONNECTION_STRING: ${{ secrets.MONGODB_CONNECTION_STRING }}
           REDIS_CONNECTION_STRING: ${{ secrets.REDIS_CONNECTION_STRING }}
         run: |
+          # Inject secrets into manifests
           envsubst < k8s/secret.yml > k8s/secret_ready.yml
 
+          # Apply all manifests
           kubectl apply -f k8s/redis.yml
           kubectl apply -f k8s/configmap.yml
           kubectl apply -f k8s/secret_ready.yml
           kubectl apply -f k8s/service.yml
           kubectl apply -f k8s/deployments.yml
 
+          # Rollout restart để pull image mới nhất từ GHCR
           kubectl rollout restart deployment/datn2026-stt43-backend

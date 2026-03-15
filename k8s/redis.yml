@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis
+  name: datn-redis
   namespace: datn2026-stt43
 spec:
   replicas: 1
@@ -22,7 +22,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-service
+  name: datn-redis-service
   namespace: datn2026-stt43
 spec:
   selector:

@@ -3,5 +3,6 @@ kind: ConfigMap
 metadata:
   name: backend-config
   namespace: datn2026-stt43
+n2026-stt43
 data:
   MongoDb__Database: "DoAnTotNghiepDb"

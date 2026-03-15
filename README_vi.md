@@ -4,6 +4,11 @@
 - Backend API build: passing / pipeline đang chạy ổn định.
 - Realtime server: online, WebSocket + WebRTC services trên VPS.
 
+## API & Trạng thái Server
+- **Base URL**: `https://datn.chessy.dev`
+- **Kiểm tra Health**: [https://datn.chessy.dev/health](https://datn.chessy.dev/health)
+- **Tài liệu API**: Chi tiết kế hoạch endpoint có tại [API_PLAN.md](API_PLAN.md)
+
 ## Mục lục
 - [Giới thiệu](#giới-thiệu)
 - [Thành viên & vai trò](#thành-viên--vai-trò)
@@ -89,28 +94,45 @@ Call system: WebRTC + STUN/TURN + Coturn.
 ## Chức năng chính
 
 ### Đối với Người dùng
-- **Đăng ký & Hồ sơ**: Tạo tài khoản và quản lý thông tin cá nhân.
-- **Ghép đôi (Swipe)**: Hệ thống gợi ý và ghép đôi người dùng linh hoạt.
-- **Chat thời gian thực**: Nhắn tin tức thì qua WebSocket.
-- **Cuộc gọi Video/Audio**: Gọi điện bảo mật tích hợp WebRTC.
-- **Phát hiện lừa đảo**: Bảo vệ người dùng bằng AI, cảnh báo hành vi nghi vấn.
+- **Xác thực đa phương thức**: Đăng ký/đăng nhập truyền thống, OAuth (Google), Reset mật khẩu và Xác thực Email.
+- **Hồ sơ & Ảnh**: Quản lý thông tin cá nhân, sở thích, vị trí và bộ sưu tập ảnh.
+- **Xác minh tài khoản**: Xác thực danh tính qua khuôn mặt (FaceID), số điện thoại và ID để tăng độ tin cậy.
+- **Ghép đôi & Gợi ý**: Hệ thống Discovery gợi ý người dùng dựa trên sở thích và vị trí.
+- **Swipe & Match**: Cơ chế quẹt trái/phải cổ điển với thông báo Match tức thì.
+- **Chat & Real-time**: Nhắn tin văn bản thời gian thực, quản lý hội thoại.
+- **Cuộc gọi Audio/Video**: Tích hợp gọi điện bảo mật qua giao thức WebRTC (STUN/TURN).
+- **An toàn & Bảo mật**: Chế độ Safe-mode, chia sẻ vị trí khẩn cấp và Check-in khi đi hẹn hò.
 
 ### Đối với Quản trị viên (Admin)
-- **Quản lý người dùng**: Theo dõi và quản lý tài khoản người dùng hệ thống.
-- **Báo cáo lừa đảo**: Xem xét và xử lý các báo cáo từ mô hình ML.
-- **Giám sát hệ thống**: Theo dõi trạng thái server và lưu lượng cuộc gọi.
+- **Hệ thống Đánh giá (Flag)**: Tự động gắn cờ các nội dung/hành vi vi phạm (tin nhắn, ảnh, profile).
+- **Chỉ số tin cậy (Trust Score)**: ML model tự động tính toán điểm uy tín để phát hiện lừa đảo.
+- **Quản trị người dùng**: Ban/Unban, Shadow-ban, đình chỉ tài khoản và bắt buộc đăng xuất.
+- **Báo cáo & Phân tích**: Dashboard theo dõi người dùng (DAU), số lượng match, báo cáo lừa đảo và phân tích hành vi.
+- **Quản lý hệ thống**: Công cụ reindex dữ liệu, dọn dẹp cache và cập nhật mô hình ML.
 
 ## Danh sách API Endpoints
 
-### Xác thực & Người dùng
-- `POST /api/users`: Đăng ký tài khoản mới.
-- `POST /api/auth/login`: (Dự kiến) Đăng nhập hệ thống.
-- `GET /api/users/{id}`: (Dự kiến) Lấy thông tin chi tiết hồ sơ.
+### Phase 1: Nền tảng (Auth & Profile)
+- `POST /api/auth/*`: Đăng ký, Đăng nhập, OAuth và Quản lý phiên làm việc.
+- `GET/PATCH /api/users/me/*`: Quản lý hồ sơ, ảnh và tùy chọn cá nhân.
+- `POST /api/verification/*`: Xác thực Face, Phone và CMND.
 
-### Ghép đôi & Real-time
-- `GET /api/swipe/recommendations`: (Dự kiến) Lấy danh sách gợi ý ghép đôi.
-- `POST /api/swipe/action`: (Dự kiến) Thả tim hoặc Bỏ qua hồ sơ.
-- `GET /health`: Kiểm tra trạng thái hệ thống (MongoDB, Redis, API).
+### Phase 2: Dating Core (Swipe & Chat)
+- `GET /api/discovery/*`: Danh sách gợi ý và xem chi tiết profile.
+- `POST /api/swipes/*`: Thực hiện quẹt Like/Pass và Undo.
+- `GET/POST /api/chat/*`: Quản lý hội thoại và tin nhắn real-time.
+- `POST /api/calls/*`: Khởi tạo và xử lý cuộc gọi (WebRTC).
+
+### Phase 3: An toàn & Quản trị
+- `POST /api/flags/*`: Gắn cờ vi phạm nội dung và người dùng.
+- `GET /api/trust/*`: Xem điểm uy tín và phân loại người dùng của ML.
+- `GET/POST /api/admin/*`: Các API đặc quyền Dashboard, Ban người dùng và Phân tích số liệu.
+- `GET /api/system/health`: Kiểm tra trạng thái hệ thống (Health Check).
+
+## 🚀 Sắp ra mắt (Coming Soon)
+- **Admin Dashboard**: Giao diện quản trị toàn diện cho người điều hành hệ thống.
+- **Server Health Check**: Hệ thống giám sát và biểu đồ hóa sức khỏe server thời gian thực.
+- **Mobile App**: Phiên bản ứng dụng di động cho iOS và Android.
 
 ## Folder structure
 ```

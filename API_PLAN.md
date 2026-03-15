@@ -1,5 +1,7 @@
 # Dating App API Endpoint Plan
 
+**Base URL**: `https://datn.chessy.dev`
+
 Legend: 
 - `[CORE]` = Core foundation (Phase 1/2) built first
 - Phase 1 = Core foundation

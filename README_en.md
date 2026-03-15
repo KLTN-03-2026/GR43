@@ -5,6 +5,11 @@
 - Backend API build: passing.
 - Realtime + WebRTC server: online, handling WebSocket and call traffic.
 
+## API & Server Status
+- **Base URL**: `https://datn.chessy.dev`
+- **Health Check**: [https://datn.chessy.dev/health](https://datn.chessy.dev/health)
+- **API Documentation**: Detailed endpoint plans found in [API_PLAN.md](API_PLAN.md)
+
 ## Table of Contents
 
 - [Overview](#overview)
@@ -25,6 +30,49 @@
 ## Overview
 
 Building a matchmaking platform augmented with machine-learning-powered scam detection. The stack ties React/React Native frontends to an ASP.NET Core 8 API, WebSocket real-time layer, AI services (FastAPI + XGBoost + Sentence Transformers), and a call system that leverages WebRTC, STUN, and Coturn TURN servers.
+
+## Main Features
+
+### For Users
+- **Multi-factor Authentication**: Traditional registration/login, OAuth (Google), Password Reset, and Email Verification.
+- **Profiles & Photos**: Manage personal info, preferences, location, and photo galleries.
+- **Account Verification**: Identity verification via FaceID, Phone, and ID to increase trust.
+- **Discovery & Recommendations**: Suggest users based on shared interests and proximity.
+- **Swipe & Match**: Classic left/right swipe mechanism with instant Match notifications.
+- **Real-time Chat**: Text messaging and conversation management over WebSockets.
+- **Audio/Video Calls**: Secure calling integrated via WebRTC (STUN/TURN) protocols.
+- **Safety & Security**: Safe-mode, emergency location sharing, and Date Check-ins.
+
+### For Admins
+- **Content Flagging System**: Automated flagging for violating content (messages, photos, profiles).
+- **Trust Score**: AI/ML-driven reputation scoring for proactive fraud detection.
+- **User Moderation**: Tools for Banning, Shadow-banning, accounts suspension, and forced logouts.
+- **Analytics Dashboard**: Track Daily Active Users (DAU), match rates, fraud reports, and behavioral trends.
+- **System Maintenance**: Tools for data reindexing, cache management, and ML model updates.
+
+## API Endpoints List
+
+### Phase 1: Foundation (Auth & Profile)
+- `POST /api/auth/*`: Registration, Login, OAuth, and Session Management.
+- `GET/PATCH /api/users/me/*`: Profile, photo, and preference management.
+- `POST /api/verification/*`: Face, Phone, and ID verification.
+
+### Phase 2: Dating Core (Swipe & Chat)
+- `GET /api/discovery/*`: Recommendation lists and detailed profile views.
+- `POST /api/swipes/*`: Swipe actions (Like/Pass) and Undo.
+- `GET/POST /api/chat/*`: Real-time messaging and conversation management.
+- `POST /api/calls/*`: WebRTC call initialization and handling.
+
+### Phase 3: Safety & Administration
+- `POST /api/flags/*`: Content and user flagging.
+- `GET /api/trust/*`: Access ML-calculated trust scores and user classification.
+- `GET/POST /api/admin/*`: Privilege APIs for Dashboard, Moderation, and Analytics.
+- `GET /api/system/health`: System status monitoring (Health Check).
+
+##  Coming Soon
+- **Admin Dashboard**: Full-featured management UI for system administrators.
+- **Server Health Dashboard**: Real-time cluster metrics monitoring and visualization.
+- **Mobile Application**: Dedicated iOS and Android apps for mobile users.
 
 ## Team & Roles
 

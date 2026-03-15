@@ -33,8 +33,11 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.MapHealthChecks("/health");
 app.MapControllers();
+app.MapFallbackToFile("index.html");
 app.UseHttpsRedirection();
 
 // Initialize Database

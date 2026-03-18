@@ -1,0 +1,26 @@
+name: Notify Discord
+
+on:
+  push:
+    branches:
+      - main
+      - cicd
+      - develop
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord notification
+        run: |
+          COMMITS=$(jq -r '.commits[] | "- " + .message' <<< '${{ toJson(github.event) }}')
+
+          curl -H "Content-Type: application/json" \
+          -d "{
+            \"content\": \"**New push to ${{ github.ref_name }}**\n\
+Author: ${{ github.actor }}\n\
+Repo: ${{ github.repository }}\n\
+\n Commits:\n$COMMITS\"
+          }" \
+          ${{ secrets.DISCORD_WEBHOOK }}

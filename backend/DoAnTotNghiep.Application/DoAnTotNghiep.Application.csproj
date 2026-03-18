@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
         <PackageReference Include="MediatR" Version="14.1.0" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
     </ItemGroup>

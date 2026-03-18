@@ -1,23 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-      <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\DoAnTotNghiep.Domain\DoAnTotNghiep.Domain.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\DoAnTotNghiep.Domain\DoAnTotNghiep.Domain.csproj"/>
+        <ProjectReference Include="..\DoAnTotNghiep.Application\DoAnTotNghiep.Application.csproj"/>
 
-  <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.5" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.5" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.5" />
-      <PackageReference Include="MongoDB.Driver" Version="3.7.0" />
-      <PackageReference Include="MongoDB.Bson" Version="3.7.0" />
-      <PackageReference Include="StackExchange.Redis" Version="2.12.1" />
+    </ItemGroup>
 
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="BCrypt.Net-Next" Version="4.1.0"/>
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.5"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.5"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.5"/>
+        <PackageReference Include="MongoDB.Driver" Version="3.7.0"/>
+        <PackageReference Include="MongoDB.Bson" Version="3.7.0"/>
+        <PackageReference Include="StackExchange.Redis" Version="2.12.1"/>
+
+    </ItemGroup>
 
 </Project>

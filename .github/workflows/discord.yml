@@ -21,17 +21,41 @@ jobs:
           REPOSITORY: ${{ github.repository }}
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          # Robust JSON payload construction using jq to avoid escaping/shell injection issues
+          # Use jq to build a rich Discord embed from the GitHub event context
           PAYLOAD=$(jq -n \
             --argjson event "$EVENT_CONTEXT" \
             --arg ref "$REF_NAME" \
             --arg actor "$ACTOR" \
             --arg repo "$REPOSITORY" \
             '
-            ($event.commits | map("- " + .message) | join("\n")) as $commit_list |
+            # Format the list of commits with short hashes and links
+            ($event.commits | map("[\(.id[0:7])](\(.url)) - \(.message)") | join("\n")) as $commit_list |
+
             {
-              content: "**New push to \($ref)**\nAuthor: \($actor)\nRepo: \($repo)\n\nCommits:\n\($commit_list)"
+              embeds: [
+                {
+                  title: "New Push to \($ref)",
+                  url: $event.compare,
+                  color: 6717162,
+                  author: {
+                    name: $event.sender.login,
+                    url: $event.sender.html_url,
+                    icon_url: $event.sender.avatar_url
+                  },
+                  fields: [
+                    { name: "Repository", value: "[\($repo)](https://github.com/\($repo))", inline: true },
+                    { name: "Branch", value: "\($ref)", inline: true },
+                    { name: "Total Commits", value: "\($event.commits | length | tostring)", inline: true }
+                  ],
+                  description: "**Commits:**\n\($commit_list)",
+                  footer: {
+                    text: "DATN2026-STT43 CI/CD",
+                    icon_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                  },
+                  timestamp: ($event.head_commit.timestamp // now | strftime("%Y-%m-%dT%H:%M:%SZ"))
+                }
+              ]
             }
-            ')
+          ')
 
           curl -H "Content-Type: application/json" -d "$PAYLOAD" "$DISCORD_WEBHOOK"

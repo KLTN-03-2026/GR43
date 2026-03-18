@@ -6,6 +6,7 @@ on:
       - main
       - cicd
       - develop
+      - noti
 
 jobs:
   notify:
@@ -32,6 +33,5 @@ jobs:
               content: "**New push to \($ref)**\nAuthor: \($actor)\nRepo: \($repo)\n\nCommits:\n\($commit_list)"
             }
             ')
-          
-          curl -H "Content-Type: application/json" -d "$PAYLOAD" "$DISCORD_WEBHOOK"
 
+          curl -H "Content-Type: application/json" -d "$PAYLOAD" "$DISCORD_WEBHOOK"

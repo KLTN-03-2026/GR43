@@ -52,7 +52,7 @@ jobs:
                     text: "DATN2026-STT43 CI/CD",
                     icon_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
                   },
-                  timestamp: ($event.head_commit.timestamp // now | strftime("%Y-%m-%dT%H:%M:%SZ"))
+                  timestamp: ($event.head_commit.timestamp // (now | strftime("%Y-%m-%dT%H:%M:%SZ")))
                 }
               ]
             }

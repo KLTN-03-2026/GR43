@@ -6,6 +6,7 @@ on:
       - main
       - cicd
       - develop
+      - noti
 
 jobs:
   notify:
@@ -13,14 +14,48 @@ jobs:
 
     steps:
       - name: Send Discord notification
+        env:
+          EVENT_CONTEXT: ${{ toJson(github.event) }}
+          REF_NAME: ${{ github.ref_name }}
+          ACTOR: ${{ github.actor }}
+          REPOSITORY: ${{ github.repository }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          COMMITS=$(jq -r '.commits[] | "- " + .message' <<< '${{ toJson(github.event) }}')
+          # Use jq to build a rich Discord embed from the GitHub event context
+          PAYLOAD=$(jq -n \
+            --argjson event "$EVENT_CONTEXT" \
+            --arg ref "$REF_NAME" \
+            --arg actor "$ACTOR" \
+            --arg repo "$REPOSITORY" \
+            '
+            # Format the list of commits with short hashes and links
+            ($event.commits | map("[\(.id[0:7])](\(.url)) - \(.message)") | join("\n")) as $commit_list |
 
-          curl -H "Content-Type: application/json" \
-          -d "{
-            \"content\": \"**New push to ${{ github.ref_name }}**\n\
-Author: ${{ github.actor }}\n\
-Repo: ${{ github.repository }}\n\
-\n Commits:\n$COMMITS\"
-          }" \
-          ${{ secrets.DISCORD_WEBHOOK }}
+            {
+              embeds: [
+                {
+                  title: "New Push to \($ref)",
+                  url: $event.compare,
+                  color: 6717162,
+                  author: {
+                    name: $event.sender.login,
+                    url: $event.sender.html_url,
+                    icon_url: $event.sender.avatar_url
+                  },
+                  fields: [
+                    { name: "Repository", value: "[\($repo)](https://github.com/\($repo))", inline: true },
+                    { name: "Branch", value: "\($ref)", inline: true },
+                    { name: "Total Commits", value: "\($event.commits | length | tostring)", inline: true }
+                  ],
+                  description: "**Commits:**\n\($commit_list)",
+                  footer: {
+                    text: "DATN2026-STT43 CI/CD",
+                    icon_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                  },
+                  timestamp: ($event.head_commit.timestamp // (now | strftime("%Y-%m-%dT%H:%M:%SZ")))
+                }
+              ]
+            }
+          ')
+
+          curl -H "Content-Type: application/json" -d "$PAYLOAD" "$DISCORD_WEBHOOK"

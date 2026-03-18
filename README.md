@@ -28,10 +28,10 @@
 
 ## Vai trò trong nhóm / Team roles spotlight
 
-- Frontend: Chu Phương Anh (UI/UX, React web/mobile)
-- Backend: Phan Công Danh & Trần Huy (ASP.NET Core APIs + WebSocket)
-- Machine Learning: Phùng Đinh Quang Huy (XGBoost + embeddings)
-- System / DevOps: Trần Văn Huy (Docker, Cloudflared Tunnel, VPS + Vercel)
+- Frontend: [Chu Phương Anh](https://github.com/Chuuuu21) (UI/UX, React web/mobile)
+- Backend: [Phan Công Danh](https://github.com/CongDanh06) & [Trần Huy](https://github.com/huynartLZ) (ASP.NET Core APIs + WebSocket)
+- Machine Learning: [Phùng Đình Quang Huy](https://github.com/HawkPoseidon) (AI model & Scam detection)
+- System / DevOps: [Trần Văn Huy](https://github.com/hiamchubbybear) (Docker, Cloudflared Tunnel, VPS + Vercel)
 
 ## Thông tin thêm / Additional info
 

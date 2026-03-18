@@ -78,11 +78,11 @@ Building a matchmaking platform augmented with machine-learning-powered scam det
 
 | Student ID  | Full Name            | Email                          | Role             |
 | ----------- | -------------------- | ------------------------------ | ---------------- |
-| 28209051610 | Chu Phương Anh       | chuphuonganh21082004@gmail.com | Frontend         |
-| 28211153072 | Phan Công Danh       | cdanh1324@gmail.com            | Backend          |
-| 28211152835 | Trần Huy             | tranhuy142004@gmail.com        | Backend / Leader |
-| 28211152784 | Phùng Định Quang Huy | huyphung00@gmail.com           | Machine Learning |
-| 28211152835 | Trần Văn Huy         | tranvanhuy160304@gmail.com     | System / DevOps  |
+| 28209051610 | [Chu Phương Anh](https://github.com/Chuuuu21) | chuphuonganh21082004@gmail.com | Frontend         |
+| 28211153072 | [Phan Công Danh](https://github.com/CongDanh06) | cdanh1324@gmail.com            | Backend          |
+| 28211152835 | [Trần Huy](https://github.com/huynartLZ) | tranhuy142004@gmail.com        | Backend / Leader |
+| 28211152784 | [Phùng Định Quang Huy](https://github.com/HawkPoseidon) | huyphung00@gmail.com           | Machine Learning |
+| 28211152835 | [Trần Văn Huy](https://github.com/hiamchubbybear) | tranvanhuy160304@gmail.com     | System / DevOps  |
 
 ## Tech Stack
 

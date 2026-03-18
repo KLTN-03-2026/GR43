@@ -13,14 +13,25 @@ jobs:
 
     steps:
       - name: Send Discord notification
+        env:
+          EVENT_CONTEXT: ${{ toJson(github.event) }}
+          REF_NAME: ${{ github.ref_name }}
+          ACTOR: ${{ github.actor }}
+          REPOSITORY: ${{ github.repository }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          COMMITS=$(jq -r '.commits[] | "- " + .message' <<< '${{ toJson(github.event) }}')
+          # Robust JSON payload construction using jq to avoid escaping/shell injection issues
+          PAYLOAD=$(jq -n \
+            --argjson event "$EVENT_CONTEXT" \
+            --arg ref "$REF_NAME" \
+            --arg actor "$ACTOR" \
+            --arg repo "$REPOSITORY" \
+            '
+            ($event.commits | map("- " + .message) | join("\n")) as $commit_list |
+            {
+              content: "**New push to \($ref)**\nAuthor: \($actor)\nRepo: \($repo)\n\nCommits:\n\($commit_list)"
+            }
+            ')
+          
+          curl -H "Content-Type: application/json" -d "$PAYLOAD" "$DISCORD_WEBHOOK"
 
-          curl -H "Content-Type: application/json" \
-          -d "{
-            \"content\": \"**New push to ${{ github.ref_name }}**\n\
-Author: ${{ github.actor }}\n\
-Repo: ${{ github.repository }}\n\
-\n Commits:\n$COMMITS\"
-          }" \
-          ${{ secrets.DISCORD_WEBHOOK }}

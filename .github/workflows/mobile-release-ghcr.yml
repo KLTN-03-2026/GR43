@@ -29,7 +29,7 @@ jobs:
       - name: Generate Lowercase Image Name
         id: image_name
         run: |
-          IMAGE="${{ github.repository_owner }}/psyconnect-mobile-apk"
+          IMAGE="${{ github.repository_owner }}/datn2026-stt43-mobile-apk"
           echo "IMAGE_LOWER=$(echo $IMAGE | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx

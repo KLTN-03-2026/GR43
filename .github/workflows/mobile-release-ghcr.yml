@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      - cicd
+      - mobile
     paths:
       - "frontend/mobile-react-native/**"
       - ".github/workflows/mobile-release-ghcr.yml"

@@ -32,6 +32,7 @@ jobs:
             ($event.commits | map("[\(.id[0:7])](\(.url)) - \(.message)") | join("\n")) as $commit_list |
 
             {
+              content: "@everyone",
               embeds: [
                 {
                   title: "New Push to \($ref)",

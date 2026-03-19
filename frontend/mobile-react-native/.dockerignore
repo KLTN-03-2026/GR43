@@ -1,0 +1,7 @@
+node_modules/
+.expo/
+assets/images/partial-react-logo.png
+android/
+ios/
+*.apk
+*.aab

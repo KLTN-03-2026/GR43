@@ -14,9 +14,27 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken ct)
     {
         var requestName = typeof(TRequest).Name;
-        _logger.LogInformation("Request {Name} {@Request}", requestName, request);
+        _logger.LogInformation("Request {Name} {@Request}", requestName , Sanitize(request));
         var response = await next();
         _logger.LogInformation("Completed Request {Name}", requestName);
         return response;
+    }
+
+    private object Sanitize(object obj)
+    {
+        var props = obj.GetType().GetProperties();
+
+        var dict = new Dictionary<string, object?>();
+
+        foreach (var prop in props)
+        {
+            var isSensitive = Attribute.IsDefined(prop, typeof(SensitiveDataAttribute));
+
+            var value = prop.GetValue(obj);
+
+            dict[prop.Name] = isSensitive ? "***REDACTED***" : value;
+        }
+
+        return dict;
     }
 }

@@ -1,25 +1,20 @@
+using DoAnTotNghiep.Application.Common;
+using DoAnTotNghiep.Application.Exception;
 using DoAnTotNghiep.Domain.Users;
 using MediatR;
 
 namespace DoAnTotNghiep.Application.Users
 {
-    public class UserService : IRequestHandler<CreateUserRequest, Guid>
+    public class UserService(IUserRepository userRepository, IPasswordHasher ipasswordHasher)
+        : IRequestHandler<CreateUserRequest, Guid>
     {
-        private readonly IUserRepository _userRepository;
-
-        public UserService(IUserRepository userRepository)
-        {
-            _userRepository = userRepository;
-        }
-
         public async Task<Guid> Handle(CreateUserRequest request, CancellationToken cancellationToken)
         {
-            var existing = await _userRepository.GetByEmail(request.Email);
-
+            var existing = await userRepository.GetByEmail(request.Email);
             if (existing != null)
-                throw new Exception("Email already exists");
+                throw new ConflictException("Email already exists");
 
-            var passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+            var passwordHash = ipasswordHasher.Hash(password: request.Password);
 
             var user = new Domain.Users.Users(
                 hashPassword: passwordHash,
@@ -29,8 +24,7 @@ namespace DoAnTotNghiep.Application.Users
                 phone: request.Phone,
                 gender: request.Gender
             );
-            
-            await _userRepository.Create(user);
+            await userRepository.Create(user);
             return user.Id;
         }
     }

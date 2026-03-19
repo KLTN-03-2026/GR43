@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - cicd
+      - noti
     paths:
       - "backend/**"
       - "k8s/**"

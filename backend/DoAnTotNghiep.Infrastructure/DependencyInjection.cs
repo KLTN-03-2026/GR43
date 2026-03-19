@@ -1,4 +1,6 @@
+using DoAnTotNghiep.Application.Common;
 using DoAnTotNghiep.Infrastructure.Persistence;
+using DoAnTotNghiep.Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,7 +13,7 @@ public static class DependencyInjection
         services.AddSingleton<MongoDbContext>();
         services.AddSingleton<MongoDbInitializer>();
         services.AddScoped<Domain.Users.IUserRepository, Repositories.UserRepository>();
-
+        services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         var redisSettings = configuration.GetSection("Redis").Get<RedisSettings>();
 
         services.AddStackExchangeRedisCache(options =>

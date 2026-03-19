@@ -19,7 +19,8 @@ builder.Host.UseSerilog();
 
 var mongoSettings = builder.Configuration.GetSection("MongoDb").Get<MongoSettings>();
 var redisSettings = builder.Configuration.GetSection("Redis").Get<RedisSettings>();
-
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Services.AddApplication();
 builder.Services.AddSingleton(mongoSettings!);
 builder.Services.AddSingleton(redisSettings!);
@@ -31,9 +32,13 @@ builder.Services.AddHealthChecks()
 
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
-
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.DefaultIgnoreCondition =
+        System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+});
 var app = builder.Build();
-
+app.UseExceptionHandler();
 app.UseSerilogRequestLogging();
 app.UseDefaultFiles();
 app.UseStaticFiles();
@@ -57,7 +62,7 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 app.UseHttpsRedirection();
 
-// Initialize Database
+
 using (var scope = app.Services.CreateScope())
 {
     var initializer = scope.ServiceProvider.GetRequiredService<MongoDbInitializer>();

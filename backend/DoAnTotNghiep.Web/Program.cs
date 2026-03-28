@@ -20,7 +20,9 @@ builder.Host.UseSerilog();
 
 var mongoSettings = builder.Configuration.GetSection("MongoDb").Get<MongoSettings>();
 var redisSettings = builder.Configuration.GetSection("Redis").Get<RedisSettings>();
-
+var secretKey = builder.Configuration["Key:SecretKey"];
+builder.Services.Configure<KeySettings>(builder.Configuration.GetSection("Key"));
+builder.Services.AddJwtAuthentication(secretKey);
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 WebApplication.CreateBuilder(new WebApplicationOptions
 {

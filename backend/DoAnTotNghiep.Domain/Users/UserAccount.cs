@@ -11,6 +11,7 @@ public class UserAccount(string username, string hashPassword, string email) : B
     public string Email { get; private set; } = email;
     public bool IsVerified { get; private set; } = false;
     public string Role { get; private set; } = "Client";
+    public List<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
     public void MarkAsVerified()
     {

@@ -17,6 +17,11 @@ public class UserRepository : IUserRepository
     {
         await _users.InsertOneAsync(user);
     }
+    
+    public async Task Create(UserAccount user)
+    {
+        await _users.InsertOneAsync(user);
+    }
 
     public async Task<UserAccount?> GetByEmail(string email)
     {
@@ -35,5 +40,15 @@ public class UserRepository : IUserRepository
         };
         var response = await _users.FindOneAndUpdateAsync(filter, update, options);
         return response;
+    }
+
+    public async Task<UserAccount> GetByRefreshToken(string refreshToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync(UserAccount user)
+    {
+        throw new NotImplementedException();
     }
 }

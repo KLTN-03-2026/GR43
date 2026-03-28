@@ -3,6 +3,7 @@ using DoAnTotNghiep.Application.Users;
 using DoAnTotNghiep.Application.Auth.ResetPassword;
 using DoAnTotNghiep.Application.Auth.ChangePassword;
 using DoAnTotNghiep.Application.Common.Models;
+using DoAnTotNghiep.Application.Users.Commands.Login;
 using MediatR;
 
 namespace DoAnTotNghiep.Web.Controllers;
@@ -16,6 +17,18 @@ public class AuthController : ControllerBase
     public AuthController(IMediator mediator)
     {
         _mediator = mediator;
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginCommand command)
+    {
+        return Ok(await _mediator.Send(command));
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh(RefreshTokenCommand command)
+    {
+        return Ok(await _mediator.Send(command));
     }
 
     [HttpPost("register")]

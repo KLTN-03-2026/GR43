@@ -3,6 +3,7 @@ using DoAnTotNghiep.Application;
 using DoAnTotNghiep.Infrastructure;
 using DoAnTotNghiep.Infrastructure.Persistence;
 using DoAnTotNghiep.Web;
+using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 
@@ -19,7 +20,12 @@ builder.Host.UseSerilog();
 
 var mongoSettings = builder.Configuration.GetSection("MongoDb").Get<MongoSettings>();
 var redisSettings = builder.Configuration.GetSection("Redis").Get<RedisSettings>();
+
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    EnvironmentName = "Development"
+});
 builder.Services.AddProblemDetails();
 builder.Services.AddApplication();
 builder.Services.AddSingleton(mongoSettings!);
@@ -29,14 +35,15 @@ builder.Services.AddSingleton<MongoDbContext>();
 builder.Services.AddHealthChecks()
     .AddMongoDb(_ => new MongoDB.Driver.MongoClient(mongoSettings!.ConnectionString), name: "mongodb")
     .AddRedis(redisSettings!.ConnectionString, name: "redis");
-
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
+// builder.Services.AddValidatorsFromAssemblyContaining<ResetPasswordValidator>();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.DefaultIgnoreCondition =
         System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
 });
+Log.Information("Environment: {Env}", builder.Environment.EnvironmentName);
 var app = builder.Build();
 app.UseExceptionHandler();
 app.UseSerilogRequestLogging();

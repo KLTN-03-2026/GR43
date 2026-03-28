@@ -1,13 +1,10 @@
-@DoAnTotNghiep.Web_HostAddress = https://localhost:7122
+@DoAnTotNghiep.Web_HostAddress = https://localhost:5017
 ### Create User
-POST https://localhost:7122/api/users
+POST http://localhost:5017/api/auth/register
 Content-Type: application/json
 
 {
   "username": "huytran",
-  "age": 22,
-  "gender": 0,
-  "email": "huytran@example.com",
-  "phone": "0912345678",
+  "email": "huytran11@example.com",
   "password": "123456"
 }

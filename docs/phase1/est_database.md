@@ -4,6 +4,7 @@ Phase 1 : Core System
 users :
 {
   "_id": "ObjectId",
+  "username": "string",
   "email": "string",
   "passwordHash": "string",
   "authProvider": "string", // 'local', 'google', 'apple'

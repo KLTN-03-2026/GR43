@@ -16,7 +16,7 @@ namespace DoAnTotNghiep.Application.Users
 
             var passwordHash = ipasswordHasher.Hash(password: request.Password);
 
-            var user = new Domain.Users.Users(
+            var user = new Domain.Users.User(
                 hashPassword: passwordHash,
                 username: request.Username,
                 age: request.Age,

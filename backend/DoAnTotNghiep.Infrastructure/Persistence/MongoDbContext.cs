@@ -28,7 +28,7 @@ public class MongoDbContext
         _database = client.GetDatabase(settings.Database);
     }
 
-    public IMongoCollection<Users> Users => _database.GetCollection<Users>("users");
+    public IMongoCollection<User> Users => _database.GetCollection<User>("users");
 }
 
 public class MongoDbInitializer
@@ -43,9 +43,9 @@ public class MongoDbInitializer
 
     public async Task InitializeAsync()
     {
-        var usersCollection = _database.GetCollection<Users>("users");
-        await usersCollection.Indexes.CreateOneAsync(new CreateIndexModel<Users>(
-            Builders<Users>.IndexKeys.Ascending(u => u.Email),
+        var usersCollection = _database.GetCollection<User>("users");
+        await usersCollection.Indexes.CreateOneAsync(new CreateIndexModel<User>(
+            Builders<User>.IndexKeys.Ascending(u => u.Email),
             new CreateIndexOptions { Unique = true }
         ));
     }

@@ -6,7 +6,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace DoAnTotNghiep.Domain.Users;
 
-public class Users : BaseEntity
+public class User : BaseEntity
 {
     public string Username { get; set; }
     public string HashPassword { get; set; }
@@ -17,7 +17,7 @@ public class Users : BaseEntity
     public string Role { get; set; }
     public string Status { get; set; }
 
-    public Users(string username, string hashPassword, int age, string email, string phone, Gender gender)
+    public User(string username, string hashPassword, int age, string email, string phone, Gender gender)
     {
         Gender = gender;
         Username = username;
@@ -28,4 +28,5 @@ public class Users : BaseEntity
         Role = "User";
         Status = "Inactive";
     }
+    public List<RefreshToken> RefreshTokens { get; set; } = [];
 }

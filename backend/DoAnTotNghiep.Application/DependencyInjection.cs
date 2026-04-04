@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text;
 using DoAnTotNghiep.Application.Behaviors;
+using DoAnTotNghiep.Application.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -38,6 +39,7 @@ public static class DependencyInjection
             };
 
         });
+        
         return services;
     }
 }

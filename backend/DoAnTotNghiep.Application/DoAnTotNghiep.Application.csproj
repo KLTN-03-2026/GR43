@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -19,7 +19,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\DoAnTotNghiep.Domain\DoAnTotNghiep.Domain.csproj" />
-    </ItemGroup>
+	</ItemGroup>
 
     <ItemGroup>
       <Folder Include="Admin\" />

@@ -1,5 +1,4 @@
-﻿using System;
-using DoAnTotNghiep.Application.Common;
+﻿using DoAnTotNghiep.Application.Common;
 using DoAnTotNghiep.Application.Exception;
 using DoAnTotNghiep.Domain.Users;
 using MediatR;
@@ -25,7 +24,7 @@ namespace DoAnTotNghiep.Application.Users.Commands.Login
             {
                 throw new NotFoundException("User not found");
             }
-            if(!_hasher.Verify(user.HashPassword, request.Password))
+            if(!_hasher.Verify(request.Password, user.HashPassword))
             {
                 throw new ConflictException("Invalid password");
             }

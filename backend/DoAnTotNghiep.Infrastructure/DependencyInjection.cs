@@ -17,6 +17,7 @@ public static class DependencyInjection
         services.AddSingleton<MongoDbContext>();
         services.AddSingleton<MongoDbInitializer>();
         services.AddScoped<Domain.Users.IUserRepository, Repositories.UserRepository>();
+        services.AddScoped<IJwtService, JwtService>();
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         services.AddScoped<IEmailService, MailKitEmailService>();
         services.AddScoped<IEmailTemplateService, EmailTemplateService>();

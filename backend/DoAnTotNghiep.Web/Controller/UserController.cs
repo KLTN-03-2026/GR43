@@ -1,0 +1,66 @@
+using DoAnTotNghiep.Application.Common.Models;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+
+namespace DoAnTotNghiep.Web.Controllers;
+
+[ApiController]
+[Route("api/users")]
+public class UserController : ControllerBase
+{
+    private readonly IMediator _mediator;
+
+    public UserController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    // Handlers will be mapped later
+    private Guid GetUserId()
+    {
+        // Mocking user id for now if Authorization is not properly injected
+        // In a real scenario: return Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        // Using a hardcoded dev user for now if we can't parse it
+        return Guid.Parse("00000000-0000-0000-0000-000000000000"); // TODO: Update with real JWT Claim parsing
+    }
+
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMyProfile()
+    {
+        var result = await _mediator.Send(new Application.Users.Profile.GetMyProfileQuery(GetUserId()));
+        return Ok(ApiResponse<Application.Users.Profile.UserProfileDto>.Succeeded(result));
+    }
+
+    [HttpPatch("me/profile")]
+    public async Task<IActionResult> UpdateProfile([FromBody] Application.Users.Profile.UpdateProfileCommand command)
+    {
+        // Inject userId from token into the command
+        var cmdWithUser = command with { UserId = GetUserId() };
+        await _mediator.Send(cmdWithUser);
+        return Ok(ApiResponse<string>.Succeeded(string.Empty, "Profile updated"));
+    }
+
+    [HttpPatch("me/preferences")]
+    public async Task<IActionResult> UpdatePreferences([FromBody] Application.Users.Profile.UpdatePreferencesCommand command)
+    {
+        var cmdWithUser = command with { UserId = GetUserId() };
+        await _mediator.Send(cmdWithUser);
+        return Ok(ApiResponse<string>.Succeeded(string.Empty, "Preferences updated"));
+    }
+
+    [HttpPatch("me/location")]
+    public async Task<IActionResult> UpdateLocation([FromBody] Application.Users.Profile.UpdateLocationCommand command)
+    {
+        var cmdWithUser = command with { UserId = GetUserId() };
+        await _mediator.Send(cmdWithUser);
+        return Ok(ApiResponse<string>.Succeeded(string.Empty, "Location updated"));
+    }
+
+    [HttpPatch("me/bio")]
+    public async Task<IActionResult> UpdateBio([FromBody] Application.Users.Profile.UpdateBioCommand command)
+    {
+        var cmdWithUser = command with { UserId = GetUserId() };
+        await _mediator.Send(cmdWithUser);
+        return Ok(ApiResponse<string>.Succeeded(string.Empty, "Bio updated"));
+    }
+}

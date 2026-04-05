@@ -27,4 +27,11 @@ public class UserAccount(string username, string email, string? hashPassword = n
         SetUpdated();
     }
 
+    public void LinkWithGoogle(string providerId)
+    {
+        Provider = AuthProvider.Google;
+        ProviderId = providerId;
+        SetUpdated();
+    }
+
 }

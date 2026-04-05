@@ -15,12 +15,12 @@ public class MongoDbContext
         try
         {
             BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
-            
+
             BsonClassMap.RegisterClassMap<DoAnTotNghiep.Domain.Common.BaseEntity>(cm =>
             {
                 cm.AutoMap();
                 cm.MapIdProperty(c => c.Id)
-                  .SetSerializer(new GuidSerializer(GuidRepresentation.Standard));
+                    .SetSerializer(new GuidSerializer(GuidRepresentation.Standard));
             });
         }
         catch (BsonSerializationException)
@@ -37,7 +37,12 @@ public class MongoDbContext
     }
 
     public IMongoCollection<UserAccount> UserAccounts => _database.GetCollection<UserAccount>("user_accounts");
-    public IMongoCollection<PasswordResetToken> PasswordResetToken => _database.GetCollection<PasswordResetToken>("password_reset_token");
+    public IMongoCollection<Session> UserSessions => _database.GetCollection<Session>("user_sessions");
+
+    public IMongoCollection<PasswordResetToken> PasswordResetToken =>
+        _database.GetCollection<PasswordResetToken>("password_reset_token");
+
+    public IMongoCollection<UserProfile> UserProfiles => _database.GetCollection<UserProfile>("user_profiles");
 }
 
 public class MongoDbInitializer
@@ -58,15 +63,18 @@ public class MongoDbInitializer
             new CreateIndexOptions { Unique = true }
         ));
         var tokensCollection = _database.GetCollection<PasswordResetToken>("password_reset_token");
-        
+
         await tokensCollection.Indexes.CreateOneAsync(new CreateIndexModel<PasswordResetToken>(
             Builders<PasswordResetToken>.IndexKeys.Ascending(u => u.UserId)
-        
         ));
 
         await tokensCollection.Indexes.CreateOneAsync(new CreateIndexModel<PasswordResetToken>(
             Builders<PasswordResetToken>.IndexKeys.Ascending(u => u.ExpiresAt),
             new CreateIndexOptions { ExpireAfter = TimeSpan.Zero }
         ));
+        
+        var sessionCollection = _database.GetCollection<Session>("user_sessions");
+        await sessionCollection.Indexes.CreateOneAsync(new CreateIndexModel<Session>(
+            Builders<Session>.IndexKeys.Ascending(u => u.CreatedAt)));
     }
 }

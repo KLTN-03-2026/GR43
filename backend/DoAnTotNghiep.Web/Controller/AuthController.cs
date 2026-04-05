@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using DoAnTotNghiep.Application.Users;
 using DoAnTotNghiep.Application.Auth.ResetPassword;
 using DoAnTotNghiep.Application.Auth.ChangePassword;
+using DoAnTotNghiep.Application.Auth.VerifyEmail;
+using DoAnTotNghiep.Application.Auth.ResendVerification;
+using DoAnTotNghiep.Application.Auth.DeleteAccount;
 using DoAnTotNghiep.Application.Common.Models;
 using DoAnTotNghiep.Application.Users.Commands.Login;
 using MediatR;
@@ -25,6 +28,12 @@ public class AuthController : ControllerBase
         return Ok(await _mediator.Send(command));
     }
 
+    [HttpPost("google-login")]
+    public async Task<IActionResult> GoogleLogin(DoAnTotNghiep.Application.Auth.GoogleLogin.GoogleLoginCommand command)
+    {
+        return Ok(await _mediator.Send(command));
+    }
+
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh(RefreshTokenCommand command)
     {
@@ -34,8 +43,8 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(CreateAccountCommand request)
     {
-        var userId = await _mediator.Send(request);
-        return Ok(ApiResponse<string>.Succeeded(userId.ToString(), "User registered successfully"));
+        var response = await _mediator.Send(request);
+        return Ok(ApiResponse<object>.Succeeded(response, "User registered successfully"));
     }
 
     [HttpPost("forgot-password")]
@@ -52,10 +61,31 @@ public class AuthController : ControllerBase
         return Ok(ApiResponse<string>.Succeeded(userId, "Password has been successfully reset."));
     }
 
-    [HttpPost("change-password")]
+    [HttpPatch("change-password")]
     public async Task<IActionResult> ChangePassword(ChangePasswordCommand request)
     {
-        var userId = await _mediator.Send(request);
-        return Ok(ApiResponse<string>.Succeeded(userId, "Password has been successfully changed."));
+        var result = await _mediator.Send(request);
+        return Ok(ApiResponse<string>.Succeeded(result, "Password has been successfully changed."));
+    }
+
+    [HttpPost("verify-email")]
+    public async Task<IActionResult> VerifyEmail(VerifyEmailCommand request)
+    {
+        var result = await _mediator.Send(request);
+        return Ok(ApiResponse<string>.Succeeded(result, "Email verified successfully."));
+    }
+
+    [HttpPost("resend-verification")]
+    public async Task<IActionResult> ResendVerification(ResendVerificationCommand request)
+    {
+        var result = await _mediator.Send(request);
+        return Ok(ApiResponse<object>.Succeeded(result, "Verification email resent."));
+    }
+
+    [HttpDelete("delete-account")]
+    public async Task<IActionResult> DeleteAccount(DeleteAccountCommand request)
+    {
+        var result = await _mediator.Send(request);
+        return Ok(ApiResponse<string>.Succeeded(result, "Account deleted successfully."));
     }
 }

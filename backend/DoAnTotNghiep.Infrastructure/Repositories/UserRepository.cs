@@ -17,7 +17,7 @@ public class UserRepository : IUserRepository
     {
         await _users.InsertOneAsync(user);
     }
-    
+
     public async Task Create(UserAccount user)
     {
         await _users.InsertOneAsync(user);
@@ -29,7 +29,7 @@ public class UserRepository : IUserRepository
             .Find(x => x.Email == email)
             .FirstOrDefaultAsync();
     }
-    
+
     public async Task<UserAccount?> ResetPassword(String newHashedPassword, String email)
     {
         var filter = Builders<UserAccount>.Filter.Eq(x => x.Email, email);
@@ -42,13 +42,24 @@ public class UserRepository : IUserRepository
         return response;
     }
 
-    public async Task<UserAccount> GetByRefreshToken(string refreshToken)
+    public async Task<UserAccount?> GetByRefreshToken(string refreshToken)
     {
-        throw new NotImplementedException();
+        var filter = Builders<UserAccount>.Filter.ElemMatch(x => x.RefreshTokens, x => x.Token == refreshToken);
+        return await _users.Find(filter).FirstOrDefaultAsync();
     }
 
-    public Task UpdateAsync(UserAccount user)
+    public async Task UpdateAsync(UserAccount user)
     {
-        throw new NotImplementedException();
+        var filter = Builders<UserAccount>.Filter.Eq(x => x.Id, user.Id);
+        await _users.ReplaceOneAsync(filter, user);
+    }
+
+    public async Task DeleteAccount(string userId)
+    {
+        if (Guid.TryParse(userId, out var guid))
+        {
+            var filter = Builders<UserAccount>.Filter.Eq(x => x.Id, guid);
+            await _users.DeleteOneAsync(filter);
+        }
     }
 }

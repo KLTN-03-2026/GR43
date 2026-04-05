@@ -8,3 +8,11 @@ Content-Type: application/json
   "email": "huytran11@example.com",
   "password": "123456"
 }
+
+### Forgot password
+POST http://localhost:5017/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "huytran11@example.com"
+}

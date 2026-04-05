@@ -1,4 +1,4 @@
-﻿using DoAnTotNghiep.Application.Common;
+using DoAnTotNghiep.Application.Common;
 using DoAnTotNghiep.Domain.Users;
 using MediatR;
 using System;
@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DoAnTotNghiep.Application.Exception;
 
 namespace DoAnTotNghiep.Application.Users.Commands.Login
 {
@@ -22,10 +23,14 @@ namespace DoAnTotNghiep.Application.Users.Commands.Login
         public async Task<AuthResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
             var user = await _repo.GetByRefreshToken(request.RefreshToken);
+            if (user == null)
+            {
+                throw new UnauthorizedException("Invalid refresh token");
+            }
             var token = user.RefreshTokens.FirstOrDefault(x => x.Token == request.RefreshToken);
             if (token == null || !token.IsActive)
             {
-                throw new System.Exception("Invalid refresh token");
+                throw new UnauthorizedException("Invalid refresh token");
             }
             token.IsRevoked = true;
             var newAccessToken = _jwt.GenerateAccessToken(user);

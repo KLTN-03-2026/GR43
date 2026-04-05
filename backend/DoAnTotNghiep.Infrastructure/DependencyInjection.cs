@@ -5,6 +5,7 @@ using DoAnTotNghiep.Infrastructure.Persistence;
 using DoAnTotNghiep.Infrastructure.Security;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Caching.Memory;
 using DoAnTotNghiep.Infrastructure.Persistence.Email.Template;
 using DoAnTotNghiep.Infrastructure.Repositories;
 
@@ -17,17 +18,23 @@ public static class DependencyInjection
         services.AddSingleton<MongoDbContext>();
         services.AddSingleton<MongoDbInitializer>();
         services.AddScoped<Domain.Users.IUserRepository, Repositories.UserRepository>();
+        services.AddScoped<Domain.Users.ISessionRepository, Repositories.UserSessionRepository>();
         services.AddScoped<IJwtService, JwtService>();
+        services.AddScoped<Domain.Users.IUserProfileRepository, Repositories.UserProfileRepository>();
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         services.AddScoped<IEmailService, MailKitEmailService>();
+        services.AddScoped<IGoogleAuthService, GoogleAuthService>();
         services.AddScoped<IEmailTemplateService, EmailTemplateService>();
         services.AddTransient<IPasswordResetToken, PasswordResetTokenRepository>();
         services.AddTransient<ITokenGenerator, TokenGenerateService>();
+        services.AddScoped<IJwtService, JwtService>();
         var redisSettings = configuration.GetSection("Redis").Get<RedisSettings>();
-
-        services.AddStackExchangeRedisCache(options =>
+        
+        services.AddMemoryCache();
+        services.AddSingleton<ICacheService>(sp => 
         {
-            options.Configuration = redisSettings?.ConnectionString ?? throw new ArgumentNullException("Redis connection is missing");
+            var memoryCache = sp.GetRequiredService<IMemoryCache>();
+            return new RedisContext(redisSettings ?? new RedisSettings(), memoryCache);
         });
         var smtpSettings = configuration.GetSection("Smtp");
         services.Configure<EmailSettings>(smtpSettings);

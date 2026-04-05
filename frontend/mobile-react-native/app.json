@@ -1,15 +1,16 @@
 {
   "expo": {
-    "name": "mobile-react-native",
-    "slug": "mobile-react-native",
+    "name": "DATN 2026",
+    "slug": "datn-2026",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mobilereactnative",
+    "scheme": "datn2026",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.tranvanhuy16032004.datn-2026"
     },
     "android": {
       "adaptiveIcon": {
@@ -38,11 +39,19 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "280b9bb9-28c9-4d7d-813f-5093a1f055b0"
+      }
+    },
+    "owner": "datn-2026"
   }
 }

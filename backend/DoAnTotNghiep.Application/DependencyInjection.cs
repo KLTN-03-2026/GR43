@@ -1,7 +1,8 @@
 using System.Reflection;
 using System.Text;
 using DoAnTotNghiep.Application.Behaviors;
-using DoAnTotNghiep.Application.Common;
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -19,9 +20,13 @@ public static class DependencyInjection
         });
         return services;
     }
+    
     public static IServiceCollection AddJwtAuthentication(this IServiceCollection services, string secretKey)
     {
 
+        services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
+
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

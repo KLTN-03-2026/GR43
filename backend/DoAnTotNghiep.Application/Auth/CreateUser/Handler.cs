@@ -4,6 +4,7 @@ using DoAnTotNghiep.Application.Exception;
 using DoAnTotNghiep.Application.Users;
 using DoAnTotNghiep.Domain.Users;
 using MediatR;
+using DoAnTotNghiep.Domain.Token;
 
 namespace DoAnTotNghiep.Application.CreateUser
 {
@@ -11,13 +12,15 @@ namespace DoAnTotNghiep.Application.CreateUser
         IUserRepository userRepository,
         IPasswordHasher ipasswordHasher,
         IEmailService emailService,
-        IEmailTemplateService emailTemplateService
-    ) : IRequestHandler<CreateAccountCommand, Guid>
+        IEmailTemplateService emailTemplateService,
+        ICacheService cache,
+        ITokenGenerator tokenGenerator
+    ) : IRequestHandler<CreateAccountCommand, object>
     {
         private static readonly String FORGOT_PASSWORD = "ForgotPassword";
         private static readonly String CREATE_ACCOUNT = "CreateAccount";
 
-        public async Task<Guid> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
+        public async Task<object> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
         {
             var existing = await userRepository.GetByEmail(request.Email);
             if (existing != null)
@@ -32,15 +35,25 @@ namespace DoAnTotNghiep.Application.CreateUser
                 email: email
             );
             await userRepository.CreateAccount(user);
+            
+            string token = tokenGenerator.GenerateToken();
+            var cacheKey = $"VerifyEmail_{email}";
+            
+            await cache.SetAsync<string>(cacheKey, token, TimeSpan.FromHours(24));
+
             var body = await emailTemplateService.RenderAsync(CREATE_ACCOUNT,
-                new { UserName = username, Email = email });
+                new { UserName = username, Email = email, Token = token });
             await emailService.SendAsync(
                 email,
                 "Welcome to DATN",
                 body,
                 true
             );
-            return user.Id;
+            return new { 
+                UserId = user.Id,
+                EmailVerificationToken = token,
+                Message = "User registered successfully"
+            };
         }
     }
 }

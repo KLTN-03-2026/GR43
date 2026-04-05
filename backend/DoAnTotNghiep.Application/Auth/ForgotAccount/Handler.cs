@@ -9,7 +9,7 @@ using MediatR;
 namespace DoAnTotNghiep.Application.Auth.ForgotAccount
 {
     public class Handler(
-        IPasswordResetToken passwordResetTokenRepository,
+        ICacheService cache,
         IUserRepository userRepository,
         IEmailService emailService,
         IEmailTemplateService emailTemplateService,
@@ -17,27 +17,28 @@ namespace DoAnTotNghiep.Application.Auth.ForgotAccount
     ) : IRequestHandler<ForgotPasswordCommand, Unit>
     {
         private static readonly String FORGOT_PASSWORD = "ForgotPassword";
-
+        private static readonly int EXPIRE_TIME_FORGOT_PASSWORD_TOKEN = 10;
 
         public async Task<Unit> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
         {
             var existing = await userRepository.GetByEmail(request.Email);
-            if (existing != null)
+            if (existing == null)
                 throw new NotFoundException("User not found");
             String email = existing.Email;
             String token = tokenGenerator.GenerateToken();
-            passwordResetTokenRepository.InsertToken(new PasswordResetToken(
-                userId: Guid.NewGuid(),
-                email: existing.Email,
-                token: token,
-                expiresAt: DateTime.Now.AddHours(10),
-                isUsed: false
-            ));
+            var cacheKey = $"ResetPassword_{email}";
+            
+            await cache.SetAsync<string>(cacheKey, token, TimeSpan.FromMinutes(EXPIRE_TIME_FORGOT_PASSWORD_TOKEN));
+            
             var body = await emailTemplateService.RenderAsync(FORGOT_PASSWORD,
-                new { Resetlink = "", Token = email });
+                new
+                {
+                    Resetlink = "", Token = token, ExpireMinutes = EXPIRE_TIME_FORGOT_PASSWORD_TOKEN,
+                    UserName = existing.Username
+                });
             await emailService.SendAsync(
                 email,
-                "Are you forgot your password?",
+                "Bạn quên mật khẩu ?",
                 body,
                 true
             );

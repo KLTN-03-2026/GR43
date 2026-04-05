@@ -2,9 +2,9 @@ using MediatR;
 
 namespace DoAnTotNghiep.Application.Auth.ResetPassword;
 
-public class ResetPasswordCommand(string email, string password, string token) : IRequest<String>
+public class ResetPasswordCommand : IRequest<String>
 {
-    public  String Email { get; set; } = email!;
-    public  String NewPassword { get; set; } = password;
-    public  String ResetToken { get; set; } = token;
+    public required string Email { get; set; }
+    public required string NewPassword { get; set; }
+    public required string ResetToken { get; set; }
 }

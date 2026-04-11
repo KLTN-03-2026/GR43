@@ -1,11 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  GoogleSignin,
-  statusCodes,
-} from "@react-native-google-signin/google-signin";
+import * as WebBrowser from 'expo-web-browser';
+import * as GoogleAuth from 'expo-auth-session/providers/google';
+// removed unused NativeModules and duplicate useEffect import
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -19,12 +18,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Path, Stop } from "react-native-svg";
 import { RootStackParamList } from "../../../app/navigation/RootNavigator";
 
-// Cấu hình Google Sign-In từ biến môi trường
-GoogleSignin.configure({
-  webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID!,
-  iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID!,
-  offlineAccess: true,
-});
+// Use web-based OAuth (expo-auth-session) so Google Sign-In works in Expo Go.
+WebBrowser.maybeCompleteAuthSession();
 
 const LogoGradientWave = () => (
   <Svg width="100" height="100" viewBox="0 0 100 100" fill="none">
@@ -67,42 +62,46 @@ export const LoginScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [loading, setLoading] = React.useState(false);
+  const [googleAvailable, setGoogleAvailable] = React.useState<boolean | null>(null);
 
-  const handleGoogleSignIn = async () => {
-    try {
-      setLoading(true);
-      console.log("🚀 [Google] Bắt đầu Native Sign-In...");
+  // Configure web-based Google OAuth request using expo-auth-session
+  const [request, response, promptAsync] = GoogleAuth.useIdTokenAuthRequest({
+    clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+    scopes: ['profile', 'email'],
+  });
 
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      console.log("✅ [Google] Đăng nhập thành công!");
+  useEffect(() => {
+    // mark that web-based auth is available when request is created
+    setGoogleAvailable(!!request);
+  }, [request]);
 
-      const tokens = await GoogleSignin.getTokens();
-      const idToken = tokens.idToken;
-
-      if (!idToken) {
-        throw new Error("Không nhận được idToken từ Google");
+  useEffect(() => {
+    (async () => {
+      if (response?.type === 'success') {
+        setLoading(true);
+        // id_token is returned in response.params.id_token
+        const idToken = (response as any).params?.id_token ?? (response as any).authentication?.idToken;
+        if (!idToken) {
+          setLoading(false);
+          Alert.alert('Lỗi Đăng Nhập', 'Không nhận được idToken từ Google');
+          return;
+        }
+        try {
+          console.log('📨 [Google] idToken nhận được, gửi tới Backend...');
+          await handleBackendLogin(idToken);
+        } catch (e) {
+          console.error(e);
+        } finally {
+          setLoading(false);
+        }
+      } else if (response?.type === 'error') {
+        console.warn('Google auth error', response);
+        Alert.alert('Lỗi Đăng Nhập', 'Không thể đăng nhập bằng Google');
       }
-
-      console.log("📨 [Google] idToken nhận được, gửi tới Backend...");
-      await handleBackendLogin(idToken);
-    } catch (error: any) {
-      setLoading(false);
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log("⚠️ Người dùng huỷ đăng nhập");
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        console.log("⚠️ Đang trong quá trình đăng nhập");
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        Alert.alert("Lỗi", "Google Play Services không khả dụng");
-      } else {
-        console.error("❌ [Google] Lỗi không xác định:", error);
-        Alert.alert(
-          "Lỗi Đăng Nhập",
-          error.message || "Không thể đăng nhập bằng Google",
-        );
-      }
-    }
-  };
+    })();
+  }, [response]);
 
   const handleBackendLogin = async (idToken: string) => {
     try {
@@ -169,8 +168,25 @@ export const LoginScreen = () => {
         <View style={styles.socialContainer}>
           <TouchableOpacity
             style={[styles.socialBtn, loading && styles.socialBtnDisabled]}
-            disabled={loading}
-            onPress={handleGoogleSignIn}
+            disabled={loading || !googleAvailable}
+            onPress={async () => {
+              try {
+                console.log('Google button pressed, request=', request);
+                if (!request) {
+                  Alert.alert('Unavailable', 'Google auth request is not ready.');
+                  return;
+                }
+                const result = await promptAsync({ useProxy: true });
+                console.log('promptAsync result:', result);
+                if (result?.type === 'dismiss' || result?.type === 'cancel') {
+                  // user cancelled
+                  return;
+                }
+              } catch (e) {
+                console.error('Error launching Google auth:', e);
+                Alert.alert('Lỗi', 'Không thể mở Google Sign-In.');
+              }
+            }}
           >
             {loading ? <ActivityIndicator color="#4285F4" /> : <GoogleIcon />}
           </TouchableOpacity>

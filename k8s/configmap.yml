@@ -4,4 +4,21 @@ metadata:
   name: backend-config
   namespace: datn2026-stt43
 data:
+  # Database
   MongoDb__Database: "DoAnTotNghiepDb"
+
+  # Redis
+  Redis__ConnectionString: "datn-redis-service:6379"
+
+  # RabbitMQ
+  RabbitMQ__HostName: "rabbitmq"
+
+  # SMTP (non-sensitive config)
+  Smtp__Server: "smtp.gmail.com"
+  Smtp__Port: "587"
+  Smtp__DefaultCredentials: "true"
+  Smtp__EnableSsl: "true"
+  Smtp__SenderName: "DATN_2026"
+
+  # App
+  ASPNETCORE_ENVIRONMENT: "Production"

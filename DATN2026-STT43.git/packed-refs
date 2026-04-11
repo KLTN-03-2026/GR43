@@ -1,0 +1,9 @@
+# pack-refs with: peeled fully-peeled sorted 
+60c42e05e976679966d90bff19cce4b230a96d74 refs/heads/cicd
+2c22a3c5f95d25f598a52767a8ce4c0e327f76eb refs/heads/develop
+500ac1b17cef310df4e6202a4651445fca3013b0 refs/heads/feature/auth-forgot
+519e2eb9a7f22bab333970653e03de499bf058a7 refs/heads/feature/login-jwt
+6247246d713dd0508f76b2ebdc7f92963d51603f refs/heads/feature/onboarding-ui
+34fa8bdda01ea119700e6640d1bf6f1d00d69b7a refs/heads/main
+21fce033226caae337a2b1d6a9493a4b3834aa49 refs/heads/noti
+34fa8bdda01ea119700e6640d1bf6f1d00d69b7a refs/tags/beta-v0.01

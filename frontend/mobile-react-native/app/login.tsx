@@ -1,210 +1,232 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Svg, { Defs, LinearGradient, Stop, Path } from 'react-native-svg';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Google from "expo-auth-session/providers/google";
+import { useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import React from "react";
+import {
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Svg, { Defs, LinearGradient, Path, Stop } from "react-native-svg";
 
 WebBrowser.maybeCompleteAuthSession();
-zz
+
 // The Web Client ID mapped in the backend app.json
 // Normally read from EXPO_PUBLIC_GOOGLE_CLIENT_ID, but using the explicit one provided by user
-const GOOGLE_CLIENT_ID = '96114439282-miec2ccuboqf5naulqek4lf4l2ug9amh.apps.googleusercontent.com';
-
+const GOOGLE_CLIENT_ID =
+  "96114439282-miec2ccuboqf5naulqek4lf4l2ug9amh.apps.googleusercontent.com";
 const LogoGradientWave = () => (
-    <Svg width="100" height="100" viewBox="0 0 100 100" fill="none">
-        <Defs>
-            <LinearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <Stop offset="0%" stopColor="#F97316" />
-                <Stop offset="50%" stopColor="#E11D48" />
-                <Stop offset="100%" stopColor="#7C3AED" />
-            </LinearGradient>
-        </Defs>
-        <Path
-            d="M50 10C27.9 10 10 27.9 10 50c0 14.5 7.8 27.3 19.5 34.6 2.5-8.5 7-16.1 13-22.1-13-8.5-16.5-23-9-34 9 1 18.5 7.5 22.5 16.5 5-6 10-9.5 16-10.5 4-5 13-7.5 13-7.5C76 16.5 64 10 50 10zM63.5 35.5c-4.5 1.5-8.5 6-12 12.5-4.5 8.5-4.5 19.5 0 28.5C65.5 83.5 81 77 87.5 62c4.5-10.5 2.5-22.5-5-30-2.5-1.5-12.5 2-19 3.5z"
-            fill="url(#grad)"
-        />
-    </Svg>
+  <Svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+    <Defs>
+      <LinearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <Stop offset="0%" stopColor="#F97316" />
+        <Stop offset="50%" stopColor="#E11D48" />
+        <Stop offset="100%" stopColor="#7C3AED" />
+      </LinearGradient>
+    </Defs>
+    <Path
+      d="M50 10C27.9 10 10 27.9 10 50c0 14.5 7.8 27.3 19.5 34.6 2.5-8.5 7-16.1 13-22.1-13-8.5-16.5-23-9-34 9 1 18.5 7.5 22.5 16.5 5-6 10-9.5 16-10.5 4-5 13-7.5 13-7.5C76 16.5 64 10 50 10zM63.5 35.5c-4.5 1.5-8.5 6-12 12.5-4.5 8.5-4.5 19.5 0 28.5C65.5 83.5 81 77 87.5 62c4.5-10.5 2.5-22.5-5-30-2.5-1.5-12.5 2-19 3.5z"
+      fill="url(#grad)"
+    />
+  </Svg>
 );
 
 const GoogleIcon = () => (
-    <Svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-        <Path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-        <Path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.16v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-        <Path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.16C1.43 8.55 1 10.22 1 12s.43 3.45 1.16 4.93l3.68-2.84z" fill="#FBBC05" />
-        <Path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.16 7.07l3.68 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-    </Svg>
+  <Svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+      fill="#4285F4"
+    />
+    <Path
+      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.16v2.84C3.99 20.53 7.7 23 12 23z"
+      fill="#34A853"
+    />
+    <Path
+      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.16C1.43 8.55 1 10.22 1 12s.43 3.45 1.16 4.93l3.68-2.84z"
+      fill="#FBBC05"
+    />
+    <Path
+      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.16 7.07l3.68 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+      fill="#EA4335"
+    />
+  </Svg>
 );
 
 export default function LoginScreen() {
-    const router = useRouter();
+  const router = useRouter();
 
-    const [request, response, promptAsync] = Google.useAuthRequest({
-        webClientId: GOOGLE_CLIENT_ID,
-        iosClientId: GOOGLE_CLIENT_ID,
-        androidClientId: GOOGLE_CLIENT_ID,
-        // Note: Expo often requires defining corresponding ClientIDs if you have them,
-        // but for Expo Go wrapper the webClientId usually handles it successfully.
-    });
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId:
+      "792593212502-636i3fh12fe1m5makdjar4mvg6ufrcm8.apps.googleusercontent.com",
+    iosClientId:
+      "792593212502-gtpc459mcq4qe1gqm4q4b57m1e0ouq26.apps.googleusercontent.com",
+    androidClientId:
+      "792593212502-u4untpvmgustemqve1u1f8aj9fsp95gv.apps.googleusercontent.com",
+    // Note: Expo often requires defining corresponding ClientIDs if you have them,
+    // but for Expo Go wrapper the webClientId usually handles it successfully.
+  });
 
-    React.useEffect(() => {
-        if (response?.type === 'success') {
-            const { authentication } = response;
-            if (authentication?.idToken) {
-                handleBackendLogin(authentication.idToken);
-            }
-        }
-    }, [response]);
+  React.useEffect(() => {
+    if (response?.type === "success") {
+      const { authentication } = response;
+      if (authentication?.idToken) {
+        handleBackendLogin(authentication.idToken);
+      }
+    }
+  }, [response]);
 
-    const handleBackendLogin = async (idToken: string) => {
-        try {
-            // Replace localhost with your actual API domain when testing on real devices
-            const API_URL = 'https://datn.chessy.dev/api/auth/google-login';
-            const res = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ idToken })
-            });
+  const handleBackendLogin = async (idToken: string) => {
+    try {
+      // Replace localhost with your actual API domain when testing on real devices
+      const API_URL = "https://datn.chessy.dev/api/auth/google-login";
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ idToken }),
+      });
 
-            const data = await res.json();
-            if (res.ok && data.data?.accessToken) {
-                await AsyncStorage.setItem('accessToken', data.data.accessToken);
-                await AsyncStorage.setItem('refreshToken', data.data.refreshToken);
-                router.replace('/(tabs)');
-            } else {
-                console.error("Login failed:", data);
-                alert("Login Error: " + (data.message || "Failed to authenticate"));
-            }
-        } catch (error) {
-            console.error("Network error API", error);
-            alert("Network Error");
-        }
-    };
+      const data = await res.json();
+      if (res.ok && data.data?.accessToken) {
+        await AsyncStorage.setItem("accessToken", data.data.accessToken);
+        await AsyncStorage.setItem("refreshToken", data.data.refreshToken);
+        router.replace("/(tabs)");
+      } else {
+        console.error("Login failed:", data);
+        alert("Login Error: " + (data.message || "Failed to authenticate"));
+      }
+    } catch (error) {
+      console.error("Network error API", error);
+      alert("Network Error");
+    }
+  };
 
-    return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.content}>
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
+        <View style={styles.logoContainer}>
+          <LogoGradientWave />
+        </View>
 
-                <View style={styles.logoContainer}>
-                    <LogoGradientWave />
-                </View>
+        <Text style={styles.title}>Sign up to continue</Text>
 
-                <Text style={styles.title}>Sign up to continue</Text>
+        <TouchableOpacity
+          style={styles.primaryBtn}
+          onPress={() =>
+            alert("Làm luồng đăng nhập bằng Email sau do đây là test")
+          }
+        >
+          <Text style={styles.primaryBtnText}>Continue with email</Text>
+        </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={styles.primaryBtn}
-                    onPress={() => alert("Làm luồng đăng nhập bằng Email sau do đây là test")}
-                >
-                    <Text style={styles.primaryBtnText}>Continue with email</Text>
-                </TouchableOpacity>
+        <View style={styles.dividerContainer}>
+          <View style={styles.line} />
+          <Text style={styles.orText}>or sign up with</Text>
+          <View style={styles.line} />
+        </View>
 
-                <View style={styles.dividerContainer}>
-                    <View style={styles.line} />
-                    <Text style={styles.orText}>or sign up with</Text>
-                    <View style={styles.line} />
-                </View>
+        <View style={styles.socialContainer}>
+          {/* ONLY Google kept as requested */}
+          <TouchableOpacity
+            style={styles.socialBtn}
+            disabled={!request}
+            onPress={() => promptAsync()}
+          >
+            <GoogleIcon />
+          </TouchableOpacity>
+        </View>
+      </View>
 
-                <View style={styles.socialContainer}>
-                    {/* ONLY Google kept as requested */}
-                    <TouchableOpacity
-                        style={styles.socialBtn}
-                        disabled={!request}
-                        onPress={() => promptAsync()}
-                    >
-                        <GoogleIcon />
-                    </TouchableOpacity>
-                </View>
-
-            </View>
-
-            <View style={styles.footer}>
-                <TouchableOpacity>
-                    <Text style={styles.footerLink}>Terms of use</Text>
-                </TouchableOpacity>
-                <TouchableOpacity>
-                    <Text style={styles.footerLink}>Privacy Policy</Text>
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
-    );
+      <View style={styles.footer}>
+        <TouchableOpacity>
+          <Text style={styles.footerLink}>Terms of use</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text style={styles.footerLink}>Privacy Policy</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FFFFFF',
-    },
-    content: {
-        flex: 1,
-        alignItems: 'center',
-        paddingHorizontal: 24,
-        paddingTop: Platform.OS === 'ios' ? 60 : 80,
-    },
-    logoContainer: {
-        marginBottom: 40,
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: '700',
-        color: '#000000',
-        marginBottom: 30,
-    },
-    primaryBtn: {
-        width: '100%',
-        backgroundColor: '#EF4444', // Red-500 equivalent approximating image
-        paddingVertical: 16,
-        borderRadius: 16,
-        alignItems: 'center',
-        marginBottom: 30,
-    },
-    primaryBtnText: {
-        color: '#FFFFFF',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    dividerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: '100%',
-        marginBottom: 30,
-    },
-    line: {
-        flex: 1,
-        height: 1,
-        backgroundColor: '#E5E7EB', // Gray-200
-    },
-    orText: {
-        paddingHorizontal: 16,
-        color: '#374151', // Gray-700
-        fontSize: 14,
-    },
-    socialContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        width: '100%',
-    },
-    socialBtn: {
-        width: 72,
-        height: 72,
-        borderWidth: 1,
-        borderColor: '#E5E7EB',
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#FFFFFF',
-    },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        paddingBottom: Platform.OS === 'ios' ? 40 : 20,
-        width: '100%',
-    },
-    footerLink: {
-        color: '#EF4444', // Match the button hue
-        fontSize: 14,
-        fontWeight: '500',
-    }
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  content: {
+    flex: 1,
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingTop: Platform.OS === "ios" ? 60 : 80,
+  },
+  logoContainer: {
+    marginBottom: 40,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#000000",
+    marginBottom: 30,
+  },
+  primaryBtn: {
+    width: "100%",
+    backgroundColor: "#EF4444", // Red-500 equivalent approximating image
+    paddingVertical: 16,
+    borderRadius: 16,
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  primaryBtnText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  dividerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 30,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#E5E7EB", // Gray-200
+  },
+  orText: {
+    paddingHorizontal: 16,
+    color: "#374151", // Gray-700
+    fontSize: 14,
+  },
+  socialContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    width: "100%",
+  },
+  socialBtn: {
+    width: 72,
+    height: 72,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    paddingBottom: Platform.OS === "ios" ? 40 : 20,
+    width: "100%",
+  },
+  footerLink: {
+    color: "#EF4444", // Match the button hue
+    fontSize: 14,
+    fontWeight: "500",
+  },
 });

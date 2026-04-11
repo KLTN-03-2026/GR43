@@ -59,15 +59,22 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          # Truyền EXPO_PUBLIC_* từ GitHub Secrets vào Docker build
+          build-args: |
+            EXPO_PUBLIC_API_BASE_URL=${{ secrets.EXPO_PUBLIC_API_BASE_URL }}
+            EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID=${{ secrets.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID }}
+            EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID=${{ secrets.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID }}
+            EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID=${{ secrets.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID }}
+            EXPO_PUBLIC_APP_ENV=production
           cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_LOWER }}:buildcache
           cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_LOWER }}:buildcache,mode=max
 
       - name: Extract APK File from Image
         run: |
-          echo "Tạo một container tạm thời từ image vừa build..."
+          echo "Tạo container tạm từ image vừa build..."
           docker create --name apk-extractor ${{ env.REGISTRY }}/${{ env.IMAGE_LOWER }}:latest
 
-          echo "Copy APK từ container ra ngoài runner..."
+          echo "Copy APK từ container..."
           docker cp apk-extractor:/app/android/app/build/outputs/apk/release/app-release.apk ./app-release.apk
 
           echo "Xóa container tạm..."

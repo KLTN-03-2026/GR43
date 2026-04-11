@@ -7,7 +7,6 @@ import { CarouselItem } from '../components/CarouselItem';
 import { Pagination } from '../components/Pagination';
 import { OnboardingFooter } from '../components/OnboardingFooter';
 import { ONBOARDING_SPACED_ITEM_WIDTH, SCREEN_WIDTH, SCREEN_HEIGHT } from '../utils/constants';
-
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Onboarding'>;
 };
@@ -59,12 +58,10 @@ export const OnboardingScreen: React.FC<Props> = ({ navigation }) => {
         <OnboardingFooter 
           currentSlide={onboardingData[currentIndex]}
           onCreateAccount={() => {
-            // navigation.navigate('Register')
-            console.log('Navigate to Register');
+            navigation.navigate('SignUp');
           }}
           onSignIn={() => {
-            // navigation.navigate('Login')
-            console.log('Navigate to Login');
+            navigation.navigate('Login');
           }}
         />
       </View>

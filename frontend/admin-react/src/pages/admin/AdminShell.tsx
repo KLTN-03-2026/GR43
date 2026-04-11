@@ -6,7 +6,7 @@ type AdminShellProps = {
 };
 
 const routeByMenu: Record<MenuItem, string> = {
-  Home: '/admin/home',
+  Dashboard: '/admin/dashboard',
   'User Management': '/admin/user-management',
   Reports: '/admin/reports',
   Notifications: '/admin/notifications',
@@ -14,7 +14,7 @@ const routeByMenu: Record<MenuItem, string> = {
 };
 
 const menuByRoute: Array<{ prefix: string; menu: MenuItem }> = [
-  { prefix: '/admin/home', menu: 'Home' },
+  { prefix: '/admin/dashboard', menu: 'Dashboard' },
   { prefix: '/admin/user-management', menu: 'User Management' },
   { prefix: '/admin/reports', menu: 'Reports' },
   { prefix: '/admin/notifications', menu: 'Notifications' },
@@ -23,7 +23,7 @@ const menuByRoute: Array<{ prefix: string; menu: MenuItem }> = [
 
 function resolveActiveMenu(pathname: string): MenuItem {
   const matched = menuByRoute.find((item) => pathname.startsWith(item.prefix));
-  return matched ? matched.menu : 'Home';
+  return matched ? matched.menu : 'Dashboard';
 }
 
 export default function AdminShell({ onLogout }: AdminShellProps) {

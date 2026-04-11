@@ -2,9 +2,12 @@ import { useRef, useState } from 'react';
 import logoImage from '../../assets/logo.png';
 import notificationIcon from '../../assets/notification.png';
 import avatarImage from '../../assets/avatar.jpg';
+import userIcon from '../../assets/user.png';
+import monthlyActiveIcon from '../../assets/Monthly-Active.png';
+import heartIcon from '../../assets/heart.png';
 import useOutsideClick from '../../shared/hooks/useOutsideClick';
 
-export type MenuItem = 'Home' | 'User Management' | 'Reports' | 'Notifications' | 'Statistics';
+export type MenuItem = 'Dashboard' | 'User Management' | 'Reports' | 'Notifications' | 'Statistics';
 
 type AdminLayoutProps = {
   activeItem: MenuItem;
@@ -13,7 +16,15 @@ type AdminLayoutProps = {
   children: React.ReactNode;
 };
 
-const sideItems: MenuItem[] = ['Home', 'User Management', 'Reports', 'Notifications', 'Statistics'];
+const sideItems: MenuItem[] = ['Dashboard', 'User Management', 'Reports', 'Notifications', 'Statistics'];
+
+const sideItemIcon: Record<MenuItem, string> = {
+  Dashboard: logoImage,
+  'User Management': userIcon,
+  Reports: monthlyActiveIcon,
+  Notifications: notificationIcon,
+  Statistics: heartIcon,
+};
 
 export default function AdminLayout({ activeItem, onLogout, onMenuSelect, children }: AdminLayoutProps) {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -23,11 +34,11 @@ export default function AdminLayout({ activeItem, onLogout, onMenuSelect, childr
 
   return (
     <div className="min-h-screen bg-[#F3F3F3] text-slate-700 lg:flex">
-      <aside className="hidden w-72 shrink-0 flex-col border-r border-slate-200 bg-white px-6 py-8 lg:flex">
+      <aside className="hidden w-72 shrink-0 flex-col border-r border-slate-200 bg-white px-6 py-8 lg:sticky lg:top-0 lg:flex lg:h-screen">
         <div>
           <img src={logoImage} alt="WeCare" className="mb-4 h-12 w-12 rounded-xl object-cover" />
-          <h2 className="text-xl font-bold text-slate-800">Editorial Arch</h2>
-          <p className="mt-1 text-sm text-slate-400">Global Dashboard</p>
+          <h2 className="text-xl font-bold text-slate-800">Mixer</h2>
+          <p className="mt-1 text-sm text-slate-400">Dashboard</p>
         </div>
 
         <nav className="mt-10 space-y-1">
@@ -44,7 +55,10 @@ export default function AdminLayout({ activeItem, onLogout, onMenuSelect, childr
                     : 'text-slate-500 hover:bg-slate-100'
                 }`}
               >
-                <span>{item}</span>
+                <span className="inline-flex items-center gap-3">
+                  <img src={sideItemIcon[item]} alt={item} className="h-4 w-4 object-contain" />
+                  {item}
+                </span>
                 <span className={isActive ? 'text-[#EE3F57]' : 'text-[#ADAFBB]'}>•</span>
               </button>
             );
@@ -61,8 +75,8 @@ export default function AdminLayout({ activeItem, onLogout, onMenuSelect, childr
 
       <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
         <header className="mb-6 flex flex-col gap-4 rounded-2xl bg-white px-5 py-4 shadow-[0_16px_34px_-24px_rgba(0,0,0,0.2)] md:flex-row md:items-center md:justify-between">
-          <h1 className="bg-[linear-gradient(135deg,#F27121_10%,#E94057_60%,#8A2387_100%)] bg-clip-text text-2xl font-bold text-transparent">
-            XXXXX Admin
+          <h1 className="text-2xl font-bold text-[#E1306C]">
+            Mixer Admin
           </h1>
 
           <div className="w-full md:max-w-md">
@@ -76,6 +90,16 @@ export default function AdminLayout({ activeItem, onLogout, onMenuSelect, childr
           <div className="flex items-center gap-3">
             <button type="button" className="rounded-full bg-[#F3F3F3] p-2.5">
               <img src={notificationIcon} alt="Notifications" className="h-5 w-5 object-contain" />
+            </button>
+            <button type="button" className="rounded-full bg-[#F3F3F3] p-2.5" aria-label="Settings">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-500">
+                <path
+                  d="M10.325 4.317a1 1 0 0 1 .95-.692h1.45a1 1 0 0 1 .95.692l.286.914a1 1 0 0 0 .95.69h.962a1 1 0 0 1 .832.445l.81 1.214a1 1 0 0 1-.045 1.16l-.585.78a1 1 0 0 0 0 1.2l.585.78a1 1 0 0 1 .045 1.16l-.81 1.214a1 1 0 0 1-.832.445h-.962a1 1 0 0 0-.95.69l-.286.914a1 1 0 0 1-.95.692h-1.45a1 1 0 0 1-.95-.692l-.286-.914a1 1 0 0 0-.95-.69h-.962a1 1 0 0 1-.832-.445l-.81-1.214a1 1 0 0 1 .045-1.16l.585-.78a1 1 0 0 0 0-1.2l-.585-.78a1 1 0 0 1-.045-1.16l.81-1.214a1 1 0 0 1 .832-.445h.962a1 1 0 0 0 .95-.69l.286-.914Z"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                />
+                <circle cx="12" cy="12" r="2.7" stroke="currentColor" strokeWidth="1.3" />
+              </svg>
             </button>
             <div ref={menuRef} className="relative">
               <button

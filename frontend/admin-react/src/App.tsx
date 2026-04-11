@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import LoginPage from './pages/auth/login/LoginPage';
 import AdminShell from './pages/admin/AdminShell';
-import HomePage from './pages/home/HomePage';
+import DashboardPage from './pages/dashboard/DashboardPage';
 import UserManagementPage from './pages/user-management/UserManagementPage';
 import ReportsPage from './pages/reports/ReportsPage';
 import NotificationsPage from './pages/notifications/NotificationsPage';
@@ -18,7 +18,7 @@ function App() {
           path="/login"
           element={
             isAuthenticated ? (
-              <Navigate to="/admin/home" replace />
+              <Navigate to="/admin/dashboard" replace />
             ) : (
               <LoginPage onLoginSuccess={() => setIsAuthenticated(true)} />
             )
@@ -35,15 +35,15 @@ function App() {
             )
           }
         >
-          <Route index element={<Navigate to="home" replace />} />
-          <Route path="home" element={<HomePage />} />
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<DashboardPage />} />
           <Route path="user-management" element={<UserManagementPage />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="statistics" element={<StatisticsPage />} />
         </Route>
 
-        <Route path="*" element={<Navigate to={isAuthenticated ? '/admin/home' : '/login'} replace />} />
+        <Route path="*" element={<Navigate to={isAuthenticated ? '/admin/dashboard' : '/login'} replace />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { View, StyleSheet, Animated, SafeAreaView, Platform } from 'react-native';
+import { View, StyleSheet, Animated, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../../app/navigation/RootNavigator';
 import { onboardingData } from '../data/onboardingData';

@@ -5,7 +5,7 @@ interface AppState {
   setTheme: (theme: 'light' | 'dark') => void;
 }
 
-export const useAppStore = create<AppState>()((set) => ({
+export const useAppStore = create<AppState>()((set: any) => ({
   theme: 'light',
-  setTheme: (theme) => set({ theme }),
+  setTheme: (theme: 'light' | 'dark') => set({ theme }),
 }));

@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Image, Pressable, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ActionButton } from '@/features/signup/components/ActionButton';
 import { SocialButton } from '@/features/signup/components/SocialButton';
@@ -29,7 +30,7 @@ export function SignUpScreen() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <Pressable
-          onPress={() => router.replace('/')}
+          onPress={() => router.replace('/' as never)}
           style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}>
           <Ionicons name="chevron-back" size={22} color="#111111" />
           <Text style={styles.backText}>Back</Text>

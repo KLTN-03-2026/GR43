@@ -1,24 +1,23 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ResponseType } from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
+import Constants from "expo-constants";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import React from "react";
 import {
+  Alert,
+  ActivityIndicator,
   Platform,
-  SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Path, Stop } from "react-native-svg";
 
 WebBrowser.maybeCompleteAuthSession();
-
-// The Web Client ID mapped in the backend app.json
-// Normally read from EXPO_PUBLIC_GOOGLE_CLIENT_ID, but using the explicit one provided by user
-const GOOGLE_CLIENT_ID =
-  "96114439282-miec2ccuboqf5naulqek4lf4l2ug9amh.apps.googleusercontent.com";
 const LogoGradientWave = () => (
   <Svg width="100" height="100" viewBox="0 0 100 100" fill="none">
     <Defs>
@@ -58,29 +57,44 @@ const GoogleIcon = () => (
 
 export default function LoginScreen() {
   const router = useRouter();
+  const [loading, setLoading] = React.useState(false);
+
+  const googleWebClientId =
+    process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID?.trim() ||
+    "792593212502-636i3fh12fe1m5makdjar4mvg6ufrcm8.apps.googleusercontent.com";
+  const isExpoGo = Constants.executionEnvironment === "storeClient";
+  const redirectUriOptions = React.useMemo(
+    () =>
+      isExpoGo
+        ? {
+            useProxy: true,
+            projectNameForProxy: "@tranvanhuy16032004/datn-2026",
+          }
+        : {
+            scheme: "datn2026",
+          },
+    [isExpoGo],
+  );
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId:
-      "792593212502-636i3fh12fe1m5makdjar4mvg6ufrcm8.apps.googleusercontent.com",
-    iosClientId:
-      "792593212502-gtpc459mcq4qe1gqm4q4b57m1e0ouq26.apps.googleusercontent.com",
-    androidClientId:
-      "792593212502-u4untpvmgustemqve1u1f8aj9fsp95gv.apps.googleusercontent.com",
-    // Note: Expo often requires defining corresponding ClientIDs if you have them,
-    // but for Expo Go wrapper the webClientId usually handles it successfully.
-  });
+    clientId: googleWebClientId,
+    webClientId: googleWebClientId,
+    responseType: ResponseType.IdToken,
+    shouldAutoExchangeCode: false,
+    scopes: ["profile", "email"],
+  }, redirectUriOptions as any);
 
   React.useEffect(() => {
-    if (response?.type === "success") {
-      const { authentication } = response;
-      if (authentication?.idToken) {
-        handleBackendLogin(authentication.idToken);
-      }
-    }
-  }, [response]);
+    console.log("[GoogleAuth][app/login] config", {
+      isExpoGo,
+      webClientId: googleWebClientId,
+      redirectUriOptions,
+    });
+  }, [isExpoGo, googleWebClientId, redirectUriOptions]);
 
-  const handleBackendLogin = async (idToken: string) => {
+  const handleBackendLogin = React.useCallback(async (idToken: string) => {
     try {
+      setLoading(true);
       // Replace localhost with your actual API domain when testing on real devices
       const API_URL = "https://datn.chessy.dev/api/auth/google-login";
       const res = await fetch(API_URL, {
@@ -92,19 +106,37 @@ export default function LoginScreen() {
       });
 
       const data = await res.json();
-      if (res.ok && data.data?.accessToken) {
+        if (res.ok && data.data?.accessToken) {
         await AsyncStorage.setItem("accessToken", data.data.accessToken);
         await AsyncStorage.setItem("refreshToken", data.data.refreshToken);
-        router.replace("/(tabs)");
+        router.replace("/(tabs)" as never);
       } else {
         console.error("Login failed:", data);
-        alert("Login Error: " + (data.message || "Failed to authenticate"));
+        Alert.alert("Login Error", data.message || "Failed to authenticate");
       }
     } catch (error) {
       console.error("Network error API", error);
-      alert("Network Error");
+      Alert.alert("Network Error", "Không thể kết nối server");
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [router]);
+
+  React.useEffect(() => {
+    console.log("[GoogleAuth][app/login] response", response);
+    if (response?.type === "success") {
+      const idToken =
+        (response as any).params?.id_token ||
+        (response as any).authentication?.idToken;
+
+      if (idToken) {
+        handleBackendLogin(idToken);
+      }
+    } else if (response?.type === "error") {
+      const message = (response as any)?.error?.message ?? "Google login thất bại";
+      Alert.alert("Google Sign-In Error", message);
+    }
+  }, [response, handleBackendLogin]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -134,10 +166,34 @@ export default function LoginScreen() {
           {/* ONLY Google kept as requested */}
           <TouchableOpacity
             style={styles.socialBtn}
-            disabled={!request}
-            onPress={() => promptAsync()}
+            disabled={!request || loading}
+            onPress={async () => {
+              try {
+                console.log("[GoogleAuth][app/login] request", request);
+                if (request) {
+                  const redirectOk = request.redirectUri === "https://auth.expo.io/@tranvanhuy16032004/datn-2026";
+                  const responseTypeOk = request.responseType === "id_token";
+                  if (!redirectOk || !responseTypeOk) {
+                    Alert.alert("Google Config Error", "Bundle đang dùng config cũ. Hãy restart bằng `npx expo start -c` rồi thử lại.");
+                    console.warn("[GoogleAuth][app/login] blocked invalid request config", {
+                      redirectUri: request.redirectUri,
+                      responseType: request.responseType,
+                    });
+                    return;
+                  }
+                }
+                const result = await promptAsync();
+                console.log("[GoogleAuth][app/login] promptAsync result", result);
+                if (result.type === "cancel" || result.type === "dismiss") {
+                  return;
+                }
+              } catch (error) {
+                console.error("Error launching Google auth", error);
+                Alert.alert("Google Sign-In Error", "Không thể mở Google Sign-In");
+              }
+            }}
           >
-            <GoogleIcon />
+            {loading ? <ActivityIndicator color="#4285F4" /> : <GoogleIcon />}
           </TouchableOpacity>
         </View>
       </View>

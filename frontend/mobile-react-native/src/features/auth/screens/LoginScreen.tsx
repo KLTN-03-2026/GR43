@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ResponseType } from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import * as GoogleAuth from 'expo-auth-session/providers/google';
 // removed unused NativeModules and duplicate useEffect import
@@ -63,12 +64,16 @@ export const LoginScreen = () => {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [loading, setLoading] = React.useState(false);
   const [googleAvailable, setGoogleAvailable] = React.useState<boolean | null>(null);
+  const googleWebClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID?.trim() || '792593212502-636i3fh12fe1m5makdjar4mvg6ufrcm8.apps.googleusercontent.com';
+  const redirectUri = 'https://auth.expo.io/@tranvanhuy16032004/datn-2026';
 
   // Configure web-based Google OAuth request using expo-auth-session
-  const [request, response, promptAsync] = GoogleAuth.useIdTokenAuthRequest({
-    clientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+  const [request, response, promptAsync] = GoogleAuth.useAuthRequest({
+    clientId: googleWebClientId,
+    webClientId: googleWebClientId,
+    responseType: ResponseType.IdToken,
+    shouldAutoExchangeCode: false,
+    redirectUri,
     scopes: ['profile', 'email'],
   });
 
@@ -171,13 +176,23 @@ export const LoginScreen = () => {
             disabled={loading || !googleAvailable}
             onPress={async () => {
               try {
-                console.log('Google button pressed, request=', request);
+                console.log('[GoogleAuth][feature/login] request=', request);
                 if (!request) {
                   Alert.alert('Unavailable', 'Google auth request is not ready.');
                   return;
                 }
-                const result = await promptAsync({ useProxy: true });
-                console.log('promptAsync result:', result);
+                const redirectOk = request.redirectUri === 'https://auth.expo.io/@tranvanhuy16032004/datn-2026';
+                const responseTypeOk = request.responseType === 'id_token';
+                if (!redirectOk || !responseTypeOk) {
+                  Alert.alert('Google Config Error', 'Bundle đang dùng config cũ. Hãy restart bằng `npx expo start -c` rồi thử lại.');
+                  console.warn('[GoogleAuth][feature/login] blocked invalid request config', {
+                    redirectUri: request.redirectUri,
+                    responseType: request.responseType,
+                  });
+                  return;
+                }
+                const result = await promptAsync();
+                console.log('[GoogleAuth][feature/login] promptAsync result:', result);
                 if (result?.type === 'dismiss' || result?.type === 'cancel') {
                   // user cancelled
                   return;

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AuthPrompt } from '@/features/onboarding/components/AuthPrompt';
 import { PaginationDots } from '@/features/onboarding/components/PaginationDots';
@@ -14,6 +15,7 @@ export function OnboardingScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
   const copyIndex = activeIndex % ONBOARDING_COPY.length;
   const activeCopy = ONBOARDING_COPY[copyIndex];
+  const insets = useSafeAreaInsets();
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -29,7 +31,7 @@ export function OnboardingScreen() {
           <PaginationDots total={ONBOARDING_IMAGES.length} activeIndex={activeIndex} />
         </View>
 
-        <View style={styles.bottomSection}>
+        <View style={[styles.bottomSection, { paddingBottom: Math.max(16, insets.bottom) }]}>
           <PrimaryActionButton label="Create an account" onPress={() => router.push('/signup/email' as never)} />
           <AuthPrompt />
         </View>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PrimaryButton } from '../../../shared/components/PrimaryButton';
 import { OnboardingSlide } from '../data/onboardingData';
 
@@ -14,6 +15,8 @@ export const OnboardingFooter: React.FC<OnboardingFooterProps> = ({
   onCreateAccount, 
   onSignIn 
 }) => {
+  const insets = useSafeAreaInsets();
+
   return (
     <View style={styles.container}>
       {/* Dynamic Text Section */}
@@ -23,7 +26,7 @@ export const OnboardingFooter: React.FC<OnboardingFooterProps> = ({
       </View>
 
       {/* Footer Actions */}
-      <View style={styles.actions}>
+      <View style={[styles.actions, { paddingBottom: Math.max(24, insets.bottom + 12) }]}>
         <PrimaryButton 
           title="Create an account" 
           onPress={onCreateAccount} 

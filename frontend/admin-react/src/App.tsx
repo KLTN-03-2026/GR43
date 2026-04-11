@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import LoginPage from './pages/auth/login/LoginPage';
+import AdminShell from './pages/admin/AdminShell';
+import HomePage from './pages/home/HomePage';
+import UserManagementPage from './pages/user-management/UserManagementPage';
+import ReportsPage from './pages/reports/ReportsPage';
+import NotificationsPage from './pages/notifications/NotificationsPage';
+import StatisticsPage from './pages/statistics/StatisticsPage';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/admin/home" replace />
+            ) : (
+              <LoginPage onLoginSuccess={() => setIsAuthenticated(true)} />
+            )
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            isAuthenticated ? (
+              <AdminShell onLogout={() => setIsAuthenticated(false)} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        >
+          <Route index element={<Navigate to="home" replace />} />
+          <Route path="home" element={<HomePage />} />
+          <Route path="user-management" element={<UserManagementPage />} />
+          <Route path="reports" element={<ReportsPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
+          <Route path="statistics" element={<StatisticsPage />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to={isAuthenticated ? '/admin/home' : '/login'} replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App

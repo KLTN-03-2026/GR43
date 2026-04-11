@@ -1,23 +1,36 @@
 {
   "expo": {
     "name": "DATN 2026",
-    "slug": "datn-2026",
+    "slug": "datn2026",
+    "scheme": "datn2026",
     "owner": "tranvanhuy16032004",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/logo.png",
-    "scheme": "datn2026",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.tranvanhuy16032004.datn-2026",
+      "bundleIdentifier": "com.tranvanhuy16032004.datn2026",
+      "scheme": "datn2026",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
       "package": "com.tranvanhuy16032004.datn2026",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": {
+            "scheme": "datn2026"
+          },
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/logo.png",

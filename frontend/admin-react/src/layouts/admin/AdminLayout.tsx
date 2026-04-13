@@ -7,7 +7,7 @@ import monthlyActiveIcon from '../../assets/Monthly-Active.png';
 import heartIcon from '../../assets/heart.png';
 import useOutsideClick from '../../shared/hooks/useOutsideClick';
 
-export type MenuItem = 'Dashboard' | 'User Management' | 'Reports' | 'Notifications' | 'Statistics';
+export type MenuItem = 'Dashboard' | 'User Management' | 'Reports' | 'Notifications' | 'Reviews';
 
 type AdminLayoutProps = {
   activeItem: MenuItem;
@@ -16,14 +16,14 @@ type AdminLayoutProps = {
   children: React.ReactNode;
 };
 
-const sideItems: MenuItem[] = ['Dashboard', 'User Management', 'Reports', 'Notifications', 'Statistics'];
+const sideItems: MenuItem[] = ['Dashboard', 'User Management', 'Reports', 'Notifications', 'Reviews'];
 
 const sideItemIcon: Record<MenuItem, string> = {
   Dashboard: logoImage,
   'User Management': userIcon,
   Reports: monthlyActiveIcon,
   Notifications: notificationIcon,
-  Statistics: heartIcon,
+  Reviews: heartIcon,
 };
 
 export default function AdminLayout({ activeItem, onLogout, onMenuSelect, children }: AdminLayoutProps) {
@@ -51,7 +51,7 @@ export default function AdminLayout({ activeItem, onLogout, onMenuSelect, childr
                 onClick={() => onMenuSelect(item)}
                 className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-left transition ${
                   isActive
-                    ? 'border-r-4 border-[#EE3F57] bg-[#EE3F57]/10 font-semibold text-[#EE3F57]'
+                    ? 'border-l-4 border-[#EE3F57] bg-[#EE3F57]/10 font-semibold text-[#EE3F57]'
                     : 'text-slate-500 hover:bg-slate-100'
                 }`}
               >
@@ -90,16 +90,6 @@ export default function AdminLayout({ activeItem, onLogout, onMenuSelect, childr
           <div className="flex items-center gap-3">
             <button type="button" className="rounded-full bg-[#F3F3F3] p-2.5">
               <img src={notificationIcon} alt="Notifications" className="h-5 w-5 object-contain" />
-            </button>
-            <button type="button" className="rounded-full bg-[#F3F3F3] p-2.5" aria-label="Settings">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-500">
-                <path
-                  d="M10.325 4.317a1 1 0 0 1 .95-.692h1.45a1 1 0 0 1 .95.692l.286.914a1 1 0 0 0 .95.69h.962a1 1 0 0 1 .832.445l.81 1.214a1 1 0 0 1-.045 1.16l-.585.78a1 1 0 0 0 0 1.2l.585.78a1 1 0 0 1 .045 1.16l-.81 1.214a1 1 0 0 1-.832.445h-.962a1 1 0 0 0-.95.69l-.286.914a1 1 0 0 1-.95.692h-1.45a1 1 0 0 1-.95-.692l-.286-.914a1 1 0 0 0-.95-.69h-.962a1 1 0 0 1-.832-.445l-.81-1.214a1 1 0 0 1 .045-1.16l.585-.78a1 1 0 0 0 0-1.2l-.585-.78a1 1 0 0 1-.045-1.16l.81-1.214a1 1 0 0 1 .832-.445h.962a1 1 0 0 0 .95-.69l.286-.914Z"
-                  stroke="currentColor"
-                  strokeWidth="1.3"
-                />
-                <circle cx="12" cy="12" r="2.7" stroke="currentColor" strokeWidth="1.3" />
-              </svg>
             </button>
             <div ref={menuRef} className="relative">
               <button

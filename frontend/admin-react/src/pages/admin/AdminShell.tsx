@@ -10,7 +10,7 @@ const routeByMenu: Record<MenuItem, string> = {
   'User Management': '/admin/user-management',
   Reports: '/admin/reports',
   Notifications: '/admin/notifications',
-  Statistics: '/admin/statistics',
+  Reviews: '/admin/reviews',
 };
 
 const menuByRoute: Array<{ prefix: string; menu: MenuItem }> = [
@@ -18,7 +18,7 @@ const menuByRoute: Array<{ prefix: string; menu: MenuItem }> = [
   { prefix: '/admin/user-management', menu: 'User Management' },
   { prefix: '/admin/reports', menu: 'Reports' },
   { prefix: '/admin/notifications', menu: 'Notifications' },
-  { prefix: '/admin/statistics', menu: 'Statistics' },
+  { prefix: '/admin/reviews', menu: 'Reviews' },
 ];
 
 function resolveActiveMenu(pathname: string): MenuItem {

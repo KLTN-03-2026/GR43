@@ -1,4 +1,6 @@
-import avatarImage from '../../../assets/avatar.jpg';
+import avatarUser1 from '../../../assets/avatar-user-1.svg';
+import avatarUser2 from '../../../assets/avatar-user-2.svg';
+import avatarUser3 from '../../../assets/avatar-user-3.svg';
 
 type UserCard = {
   id: number;
@@ -6,14 +8,15 @@ type UserCard = {
   age: number;
   location: string;
   verified: boolean;
+  avatar: string;
 };
 
 const users: UserCard[] = [
-  { id: 1, name: 'Nguyễn Minh Anh', age: 24, location: 'Quận 1, TP.HCM', verified: true },
-  { id: 2, name: 'Trần Gia Hân', age: 26, location: 'Hà Đông, Hà Nội', verified: false },
-  { id: 3, name: 'Lê Quang Huy', age: 29, location: 'Hải Châu, Đà Nẵng', verified: true },
-  { id: 4, name: 'Phạm Thanh Vy', age: 23, location: 'Ninh Kiều, Cần Thơ', verified: true },
-  { id: 5, name: 'Đỗ Hoàng Nam', age: 31, location: 'Biên Hòa, Đồng Nai', verified: false },
+  { id: 1, name: 'Nguyễn Minh Anh', age: 24, location: 'Quận 1, TP.HCM', verified: true, avatar: avatarUser1 },
+  { id: 2, name: 'Trần Gia Hân', age: 26, location: 'Hà Đông, Hà Nội', verified: false, avatar: avatarUser2 },
+  { id: 3, name: 'Lê Quang Huy', age: 29, location: 'Hải Châu, Đà Nẵng', verified: true, avatar: avatarUser3 },
+  { id: 4, name: 'Phạm Thanh Vy', age: 23, location: 'Ninh Kiều, Cần Thơ', verified: true, avatar: avatarUser1 },
+  { id: 5, name: 'Đỗ Hoàng Nam', age: 31, location: 'Biên Hòa, Đồng Nai', verified: false, avatar: avatarUser2 },
 ];
 
 export default function UserManagementContent() {
@@ -59,7 +62,7 @@ export default function UserManagementContent() {
           <article key={user.id} className="rounded-2xl bg-white p-5 shadow-[0_16px_34px_-24px_rgba(0,0,0,0.2)]">
             <div className="mb-4 flex items-start justify-between">
               <div className="relative">
-                <img src={avatarImage} alt={user.name} className="h-14 w-14 rounded-full object-cover" />
+                <img src={user.avatar} alt={user.name} className="h-14 w-14 rounded-full object-cover" />
                 {user.verified && (
                   <span className="absolute -bottom-1 -right-1 inline-flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-emerald-500 text-[10px] text-white">
                     ✓

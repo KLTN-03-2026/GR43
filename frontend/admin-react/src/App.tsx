@@ -6,7 +6,7 @@ import DashboardPage from './pages/dashboard/DashboardPage';
 import UserManagementPage from './pages/user-management/UserManagementPage';
 import ReportsPage from './pages/reports/ReportsPage';
 import NotificationsPage from './pages/notifications/NotificationsPage';
-import StatisticsPage from './pages/statistics/StatisticsPage';
+import ReviewsPage from './pages/reviews/ReviewsPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -40,7 +40,7 @@ function App() {
           <Route path="user-management" element={<UserManagementPage />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
-          <Route path="statistics" element={<StatisticsPage />} />
+          <Route path="reviews" element={<ReviewsPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to={isAuthenticated ? '/admin/dashboard' : '/login'} replace />} />

@@ -1,8 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  GoogleSignin,
-  statusCodes,
-} from "@react-native-google-signin/google-signin";
+import { ResponseType } from "expo-auth-session";
+import * as Google from "expo-auth-session/providers/google";
+import Constants from "expo-constants";
+import * as WebBrowser from "expo-web-browser";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
@@ -19,16 +19,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Path, Stop } from "react-native-svg";
 import { RootStackParamList } from "../../../app/navigation/RootNavigator";
 
-// Cấu hình Google Sign-In từ biến môi trường (fallback sang giá trị dev)
-GoogleSignin.configure({
-  webClientId:
-    process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ||
-    "792593212502-636i3fh12fe1m5makdjar4mvg6ufrcm8.apps.googleusercontent.com",
-  iosClientId:
-    process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ||
-    "792593212502-gtpc459mcq4qe1gqm4q4b57m1e0ouq26.apps.googleusercontent.com",
-  offlineAccess: true,
-});
+const GOOGLE_WEB_CLIENT_ID =
+  process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ||
+  "792593212502-636i3fh12fe1m5makdjar4mvg6ufrcm8.apps.googleusercontent.com";
+const GOOGLE_IOS_CLIENT_ID =
+  process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ||
+  "792593212502-gtpc459mcq4qe1gqm4q4b57m1e0ouq26.apps.googleusercontent.com";
+const GOOGLE_ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
+
+WebBrowser.maybeCompleteAuthSession();
 
 const LogoGradientWave = () => (
   <Svg width="100" height="100" viewBox="0 0 100 100" fill="none">
@@ -71,44 +70,61 @@ export const LoginScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [loading, setLoading] = React.useState(false);
+  const isExpoGo = Constants.executionEnvironment === "storeClient";
+
+  const redirectUriOptions = React.useMemo(
+    () =>
+      isExpoGo
+        ? {
+            useProxy: true,
+            projectNameForProxy: "@tranvanhuy16032004/datn-2026",
+          }
+        : {
+            scheme: "datn2026",
+          },
+    [isExpoGo]
+  );
+
+  const [request, response, promptAsync] = Google.useAuthRequest(
+    {
+      clientId: GOOGLE_WEB_CLIENT_ID,
+      webClientId: GOOGLE_WEB_CLIENT_ID,
+      iosClientId: GOOGLE_IOS_CLIENT_ID,
+      androidClientId: GOOGLE_ANDROID_CLIENT_ID,
+      responseType: ResponseType.IdToken,
+      shouldAutoExchangeCode: false,
+      scopes: ["profile", "email"],
+    },
+    redirectUriOptions as any
+  );
 
   const handleGoogleSignIn = async () => {
     try {
-      setLoading(true);
-      console.log("🚀 [Google] Bắt đầu Native Sign-In...");
-
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      console.log("✅ [Google] Đăng nhập thành công!");
-
-      const tokens = await GoogleSignin.getTokens();
-      const idToken = tokens.idToken;
-
-      if (!idToken) {
-        throw new Error("Không nhận được idToken từ Google");
-      }
-
-      console.log("📨 [Google] idToken nhận được, gửi tới Backend...");
-      await handleBackendLogin(idToken);
-    } catch (error: any) {
-      setLoading(false);
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log("⚠️ Người dùng huỷ đăng nhập");
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        console.log("⚠️ Đang trong quá trình đăng nhập");
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        Alert.alert("Lỗi", "Google Play Services không khả dụng");
-      } else {
-        console.error("❌ [Google] Lỗi không xác định:", error);
-        Alert.alert(
-          "Lỗi Đăng Nhập",
-          error.message || "Không thể đăng nhập bằng Google"
+      if (Platform.OS === "android" && !GOOGLE_ANDROID_CLIENT_ID) {
+        throw new Error(
+          "Thiếu EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID trong .env. Hãy tạo Android OAuth Client (SHA-1) trong Google Cloud Console."
         );
       }
+
+      if (!request) {
+        throw new Error("Google auth request chưa sẵn sàng. Vui lòng thử lại.");
+      }
+
+      setLoading(true);
+      console.log("🚀 [Google] Bắt đầu Google Auth Session...");
+
+      const result = await promptAsync();
+      if (result.type === "cancel" || result.type === "dismiss") {
+        setLoading(false);
+      }
+    } catch (error: any) {
+      setLoading(false);
+      console.error("❌ [Google] Lỗi mở Google Auth:", error);
+      Alert.alert("Lỗi Đăng Nhập", error.message || "Không thể đăng nhập bằng Google");
     }
   };
 
-  const handleBackendLogin = async (idToken: string) => {
+  const handleBackendLogin = React.useCallback(async (idToken: string) => {
     try {
       const API_URL = `${
         process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:5017"
@@ -141,7 +157,32 @@ export const LoginScreen = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigation]);
+
+  React.useEffect(() => {
+    if (!response) {
+      return;
+    }
+
+    if (response.type === "success") {
+      const idToken =
+        (response as any)?.params?.id_token ||
+        (response as any)?.authentication?.idToken;
+
+      if (idToken) {
+        console.log("📨 [Google] idToken nhận được, gửi tới Backend...");
+        handleBackendLogin(idToken);
+      } else {
+        setLoading(false);
+        Alert.alert("Lỗi Đăng Nhập", "Không nhận được idToken từ Google.");
+      }
+    } else if (response.type === "error") {
+      setLoading(false);
+      const message =
+        (response as any)?.error?.message || "Không thể đăng nhập bằng Google";
+      Alert.alert("Lỗi Đăng Nhập", message);
+    }
+  }, [handleBackendLogin, response]);
 
   return (
     <SafeAreaView style={styles.container}>

@@ -1,5 +1,4 @@
 import axios from 'axios';
-import Constants from 'expo-constants';
 import { Logger } from '../../shared/utils/logger';
 
 // Normalize errors to a standard format
@@ -22,7 +21,7 @@ apiClient.interceptors.request.use(
   (config) => {
     // e.g. const token = useAuthStore.getState().token;
     // if (token) config.headers.Authorization = `Bearer ${token}`; // (example)
-    Logger.debug(`[API RQ] \${config.method?.toUpperCase()} \${config.url}`);
+    Logger.debug(`[API RQ] ${config.method?.toUpperCase()} ${config.url}`);
     return config;
   },
   (error) => {
@@ -34,7 +33,7 @@ apiClient.interceptors.request.use(
 // Response Interceptor: Parse Errors, Log Responses
 apiClient.interceptors.response.use(
   (response) => {
-    Logger.debug(`[API RS] \${response.config.url} - Status: \${response.status}`);
+    Logger.debug(`[API RS] ${response.config.url} - Status: ${response.status}`);
     return response;
   },
   (error) => {
@@ -43,7 +42,7 @@ apiClient.interceptors.response.use(
       statusCode: error.response?.status,
     };
     
-    Logger.error(`[API RS Error] \${error.config?.url} - \${errorObj.statusCode}: \${errorObj.message}`);
+    Logger.error(`[API RS Error] ${error.config?.url} - ${errorObj.statusCode}: ${errorObj.message}`);
     
     // Auto-logout logic on 401 could go here using Zustand's getState()
     // if (errorObj.statusCode === 401) useAuthStore.getState().logout();

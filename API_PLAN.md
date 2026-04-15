@@ -46,7 +46,7 @@ Legend:
 - `DELETE /api/users/photos/{photoId}`
 - `PATCH /api/users/photos/reorder`
 
-## Verification
+    ## Verification
 
 - `POST /api/verification/face`
 - `POST /api/verification/phone`

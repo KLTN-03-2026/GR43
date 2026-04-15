@@ -6,6 +6,7 @@ on:
       - main
       - cicd
       - mobile
+      - develop
     paths:
       - "frontend/mobile-react-native/**"
       - ".github/workflows/mobile-release-ghcr.yml"

@@ -33,7 +33,8 @@ export default function EmailLoginScreen() {
         setAuth(
           authData.user || { id: authData.userId || '', email: email, username: '' }, 
           authData.accessToken, 
-          authData.refreshToken
+          authData.refreshToken,
+          authData.isProfileCompleted
         );
         navigation.replace('Home');
       } else {

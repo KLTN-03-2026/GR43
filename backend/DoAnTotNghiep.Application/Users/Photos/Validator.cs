@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DoAnTotNghiep.Application.Users.Photos
 {
-    public class Validator : AbstractValidator<Command>
+    public class Validator : AbstractValidator<UploadPhotoCommand>
     {
         public Validator()
         {

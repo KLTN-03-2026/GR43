@@ -10,7 +10,8 @@ public class Handler(
     IUserRepository userRepository, 
     ICacheService cache, 
     IJwtService jwtService, 
-    ISessionRepository sessionRepository
+    ISessionRepository sessionRepository,
+    IUserProfileRepository profileRepository
 ) : IRequestHandler<VerifyEmailCommand, AuthResponse>
 {
     public async Task<AuthResponse> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
@@ -33,19 +34,23 @@ public class Handler(
         // Generate tokens for auto-login
         var accessToken = jwtService.GenerateAccessToken(user);
         var refreshToken = jwtService.GenerateRefreshToken();
-        user.RefreshTokens.Add(refreshToken);
         
-        // Create session (defaulting some values as they're not available here directly)
-        var session = new Session(user.Id, "VerifiedDevice", "Unknown", "Mobile", null);
+        var profile = await profileRepository.GetByUserIdAsync(user.Id);
+        
+        // Create session
+        var session = new Session(user.Id, "VerifiedDevice", "Unknown", "Mobile", null, refreshToken);
         await sessionRepository.CreateSession(session);
         
-        await userRepository.UpdateAsync(user);
         await cache.RemoveAsync(cacheKey);
 
         return new AuthResponse
         {
             AccessToken = accessToken,
-            RefreshToken = refreshToken.Token
+            RefreshToken = refreshToken.Token,
+            IsProfileCompleted = profile != null,
+            UserId = user.Id,
+            Username = user.Username,
+            Email = user.Email
         };
     }
 }

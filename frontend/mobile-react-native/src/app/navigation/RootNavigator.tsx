@@ -10,20 +10,26 @@ import EmailLoginScreen from '../../features/auth/screens/EmailLoginScreen';
 import ForgotPasswordEmailScreen from '../../features/auth/screens/forgot-password/ForgotPasswordEmailScreen';
 import ForgotPasswordVerifyScreen from '../../features/auth/screens/forgot-password/ForgotPasswordVerifyScreen';
 import ResetPasswordScreen from '../../features/auth/screens/forgot-password/ResetPasswordScreen';
+<<<<<<< Updated upstream
 import { HomeScreen } from '../../features/home/screens/HomeScreen';
 import { TestHubScreen } from '../../features/core/screens/TestHubScreen';
 import { MainBottomTabs, MainTabParamList } from './MainBottomTabs';
+=======
+import { useAuthStore } from '../../store/authStore';
+import ProfileSetupScreen from '../../features/auth/screens/ProfileSetupScreen';
+>>>>>>> Stashed changes
 
 export type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
   SignUp: undefined;
-  EmailSignUp: undefined; // Map this to Details screen
+  EmailSignUp: undefined;
   EmailSignUpVerify: { email: string };
   EmailLogin: undefined;
   ForgotPasswordEmail: undefined;
   ForgotPasswordVerify: { email: string };
   ResetPassword: { email: string; token: string };
+  ProfileSetup: undefined;
   Home: undefined;
   TestHub: undefined;
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
@@ -32,14 +38,16 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
+  const { isAuthenticated, isProfileCompleted } = useAuthStore();
+
   return (
     <NavigationContainer>
       <Stack.Navigator 
-        initialRouteName="Onboarding"
         screenOptions={{ 
-          headerShown: false, // Hide headers for onboarding
+          headerShown: false,
         }}
       >
+<<<<<<< Updated upstream
         <Stack.Screen 
           name="Onboarding" 
           component={OnboardingScreen} 
@@ -89,6 +97,32 @@ export const RootNavigator = () => {
           name="MainTabs" 
           component={MainBottomTabs} 
         />
+=======
+        {!isAuthenticated ? (
+          // Auth Stack
+          <>
+            <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="SignUp" component={SignUpScreen} />
+            <Stack.Screen name="EmailSignUp" component={EmailSignUpDetailsScreen} />
+            <Stack.Screen name="EmailSignUpVerify" component={EmailSignUpVerifyScreen} />
+            <Stack.Screen name="EmailLogin" component={EmailLoginScreen} />
+            <Stack.Screen name="ForgotPasswordEmail" component={ForgotPasswordEmailScreen} />
+            <Stack.Screen name="ForgotPasswordVerify" component={ForgotPasswordVerifyScreen} />
+            <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
+          </>
+        ) : !isProfileCompleted ? (
+          // Setup Stack
+          <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} />
+        ) : (
+          // App Stack
+          <Stack.Screen 
+            name="Home" 
+            component={HomeScreen} 
+            options={{ title: 'Feed', headerShown: true }} 
+          />
+        )}
+>>>>>>> Stashed changes
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -137,7 +137,8 @@ export const LoginScreen = () => {
         setAuth(
           authData.user || { id: authData.userId || '', email: '', username: '' },
           authData.accessToken, 
-          authData.refreshToken
+          authData.refreshToken,
+          authData.isProfileCompleted
         );
         console.log("✅ [API] Đăng nhập thành công! Điều hướng về Home...");
         navigation.replace("MainTabs");

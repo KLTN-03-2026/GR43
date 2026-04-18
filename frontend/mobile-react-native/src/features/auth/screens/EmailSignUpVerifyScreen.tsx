@@ -46,9 +46,10 @@ export default function VerifyScreen() {
         if (authData && authData.accessToken) {
           Alert.alert('Success', 'Verification successful!');
           setAuth(
-            { id: '', email: email, username: '' },
+            authData.user || { id: '', email: email, username: '' },
             authData.accessToken,
-            authData.refreshToken
+            authData.refreshToken,
+            authData.isProfileCompleted
           );
           navigation.replace('Home');
         } else {

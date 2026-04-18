@@ -13,7 +13,9 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
-  setAuth: (user: User, accessToken: string, refreshToken: string) => void;
+  isProfileCompleted: boolean;
+  setAuth: (user: User, accessToken: string, refreshToken: string, isProfileCompleted?: boolean) => void;
+  setProfileStatus: (isCompleted: boolean) => void;
   logout: () => void;
 }
 
@@ -24,17 +26,21 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       refreshToken: null,
       isAuthenticated: false,
-      setAuth: (user, accessToken, refreshToken) => set({ 
+      isProfileCompleted: false,
+      setAuth: (user, accessToken, refreshToken, isProfileCompleted = false) => set({ 
         user, 
         accessToken, 
         refreshToken, 
-        isAuthenticated: true 
+        isAuthenticated: true,
+        isProfileCompleted
       }),
+      setProfileStatus: (isCompleted) => set({ isProfileCompleted: isCompleted }),
       logout: () => set({ 
         user: null, 
         accessToken: null, 
         refreshToken: null, 
-        isAuthenticated: false 
+        isAuthenticated: false,
+        isProfileCompleted: false
       }),
     }),
     {

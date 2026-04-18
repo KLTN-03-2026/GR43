@@ -15,12 +15,14 @@ namespace DoAnTotNghiep.Application.Users.Commands.Login
         private readonly IUserRepository _repo;
         private readonly IJwtService _jwt;
         private readonly ISessionRepository _sessionRepo;
+        private readonly IUserProfileRepository _profileRepo;
 
-        public RefreshTokenHandler(IUserRepository repo, IJwtService jwt, ISessionRepository sessionRepo) 
+        public RefreshTokenHandler(IUserRepository repo, IJwtService jwt, ISessionRepository sessionRepo, IUserProfileRepository profileRepo) 
         {
             _repo = repo;
             _jwt = jwt;
             _sessionRepo = sessionRepo;
+            _profileRepo = profileRepo;
         }
         public async Task<AuthResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
@@ -38,13 +40,24 @@ namespace DoAnTotNghiep.Application.Users.Commands.Login
             {
                 throw new UnauthorizedException("User not found");
             }
+            
+            var profile = await _profileRepo.GetByUserIdAsync(user.Id);
+
             session.RefreshToken.Revoke();
             var newAccessToken = _jwt.GenerateAccessToken(user);
             var newRefreshToken = _jwt.GenerateRefreshToken();
+            
+            session.RefreshToken = newRefreshToken;
+            await _sessionRepo.UpdateSession(session);
+
             return new AuthResponse
             {
                 AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken.Token
+                RefreshToken = newRefreshToken.Token,
+                IsProfileCompleted = profile != null,
+                UserId = user.Id,
+                Username = user.Username,
+                Email = user.Email
             };
         }
     }

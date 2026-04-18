@@ -21,6 +21,8 @@ public class UserProfile(Guid userId) : BaseEntity
     public int MaxAgePreference { get; private set; } = 100;
     public int MaxDistanceKm { get; private set; } = 50;
 
+
+    public List<Photo> Photos { get; set; } = [];
     public void UpdateBio(string bio, string gender, string interestedIn)
     {
         Bio = bio;

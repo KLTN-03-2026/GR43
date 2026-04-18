@@ -1,0 +1,59 @@
+﻿using DoAnTotNghiep.Application.Common;
+using DoAnTotNghiep.Application.Exception;
+using DoAnTotNghiep.Domain.Users;
+using MediatR;
+
+namespace DoAnTotNghiep.Application.Users.Photos.DeletePhoto
+{
+    public class Handler : IRequestHandler<Command>
+    {
+        private readonly IUserProfileRepository _repo;
+        private readonly ICurrentUserService _current;
+        private readonly IFileStorageService _storage;
+        private readonly ICacheService _cache;
+
+        public Handler(IUserProfileRepository repo, ICurrentUserService current, 
+            IFileStorageService storage, ICacheService cache)
+        {
+            _repo = repo;
+            _current = current;
+            _storage = storage;
+            _cache = cache;
+        }
+
+        public async Task Handle(Command request, CancellationToken cancellationToken)
+        {
+            var userId = _current.UserId;
+            var profile = await _repo.GetByUserIdAsync(Guid.TryParse(userId, out var guid) ? guid : throw new ArgumentNullException());
+
+            if (profile == null)
+                throw new NotFoundException("Profile not found");
+
+            var photo = profile.Photos
+                .FirstOrDefault(x => x.Id == request.PhotoId);
+
+            if (photo == null)
+                throw new NotFoundException("Photo not found");
+
+            await _storage.DeleteAsync(photo.Url);
+            await _storage.DeleteAsync(photo.ThumbnailUrl);
+
+            profile.Photos.Remove(photo);
+
+            if (photo.IsPrimary && profile.Photos.Any())
+            {
+                profile.Photos[0].IsPrimary = true;
+            }
+
+            for (int i = 0; i < profile.Photos.Count; i++)
+            {
+                profile.Photos[i].Order = i;
+            }
+
+            await _repo.Update(profile);
+
+            await _cache.RemoveAsync(
+                $"user:{userId}:photos");
+        }
+    }
+}

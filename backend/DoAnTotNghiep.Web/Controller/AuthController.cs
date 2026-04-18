@@ -9,6 +9,7 @@ using DoAnTotNghiep.Application.Common.Models;
 using DoAnTotNghiep.Application.Users.Commands.Login;
 using DoAnTotNghiep.Application.Auth.VerifyResetToken;
 using MediatR;
+using DoAnTotNghiep.Application.Auth.Logout;
 
 namespace DoAnTotNghiep.Web.Controllers;
 
@@ -98,5 +99,15 @@ public class AuthController : ControllerBase
     {
         var result = await _mediator.Send(request);
         return Ok(ApiResponse<string>.Succeeded(result, "Account deleted successfully."));
+    }
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(LogoutCommand request)
+    {
+        var result = await _mediator.Send(request);
+        if (!result)
+        {
+            return BadRequest(ApiResponse<string>.Failed("Invalid refresh token."));
+        }
+        return Ok(ApiResponse<string>.Succeeded(string.Empty, "Logged out successfully."));
     }
 }

@@ -1,6 +1,8 @@
 using DoAnTotNghiep.Application.Common.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using DoAnTotNghiep.Application.Users.Photos;
 
 namespace DoAnTotNghiep.Web.Controllers;
 
@@ -63,4 +65,13 @@ public class UserController : ControllerBase
         await _mediator.Send(cmdWithUser);
         return Ok(ApiResponse<string>.Succeeded(string.Empty, "Bio updated"));
     }
+    [Authorize]
+    [HttpPost("photos")]
+    public async Task<IActionResult> UploadPhoto(IFormFile file)
+    {
+        var result = await _mediator.Send(new UploadPhotoCommand(file));
+
+        return Ok(result);
+    }
+
 }

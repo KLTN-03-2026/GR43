@@ -27,7 +27,7 @@ export const CarouselItem: React.FC<CarouselItemProps> = ({ item, index, scrollX
     <View style={{ width: ONBOARDING_SPACED_ITEM_WIDTH }}>
       <Animated.View style={[styles.imageContainer, { transform: [{ scale }] }]}>
         <Image
-          source={item.imageUrl}
+          source={item.imageSource}
           style={styles.image}
           contentFit="cover"
           transition={300}

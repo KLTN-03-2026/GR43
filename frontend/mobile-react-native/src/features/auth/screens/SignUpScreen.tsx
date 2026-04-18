@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Pressable } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../../../app/navigation/RootNavigator';
+import { AuthBackButton } from '../../../shared/components/AuthBackButton';
 
 export const SignUpScreen = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -12,12 +13,7 @@ export const SignUpScreen = () => {
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.container}>
-                <Pressable
-                    onPress={() => navigation.goBack()}
-                    style={({ pressed }) => [styles.backButton, pressed && styles.backButtonPressed]}>
-                    <Ionicons name="chevron-back" size={22} color="#111111" />
-                    <Text style={styles.backText}>Back</Text>
-                </Pressable>
+                <AuthBackButton onPress={() => navigation.goBack()} />
 
                 <View style={styles.centerSection}>
                     <Image source={require('../../../../assets/images/logo.png')} style={styles.logoImage} />
@@ -81,23 +77,6 @@ const styles = StyleSheet.create({
         paddingTop: 16,
         paddingBottom: 28,
         backgroundColor: '#F3F3F3',
-    },
-    backButton: {
-        alignSelf: 'flex-start',
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 2,
-        borderRadius: 999,
-        paddingHorizontal: 8,
-        paddingVertical: 6,
-    },
-    backButtonPressed: {
-        opacity: 0.7,
-    },
-    backText: {
-        fontSize: 16,
-        color: '#111111',
-        fontWeight: '500',
     },
     centerSection: {
         flex: 1,

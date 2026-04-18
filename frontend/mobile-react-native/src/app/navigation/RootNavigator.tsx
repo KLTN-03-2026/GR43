@@ -1,7 +1,6 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, NavigatorScreenParams } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { HomeScreen } from '../../features/home/screens/HomeScreen';
 import { OnboardingScreen } from '../../features/onboarding/screens/OnboardingScreen';
 import { LoginScreen } from '../../features/auth/screens/LoginScreen';
 import { SignUpScreen } from '../../features/auth/screens/SignUpScreen';
@@ -11,6 +10,9 @@ import EmailLoginScreen from '../../features/auth/screens/EmailLoginScreen';
 import ForgotPasswordEmailScreen from '../../features/auth/screens/forgot-password/ForgotPasswordEmailScreen';
 import ForgotPasswordVerifyScreen from '../../features/auth/screens/forgot-password/ForgotPasswordVerifyScreen';
 import ResetPasswordScreen from '../../features/auth/screens/forgot-password/ResetPasswordScreen';
+import { HomeScreen } from '../../features/home/screens/HomeScreen';
+import { TestHubScreen } from '../../features/core/screens/TestHubScreen';
+import { MainBottomTabs, MainTabParamList } from './MainBottomTabs';
 
 export type RootStackParamList = {
   Onboarding: undefined;
@@ -23,6 +25,8 @@ export type RootStackParamList = {
   ForgotPasswordVerify: { email: string };
   ResetPassword: { email: string; token: string };
   Home: undefined;
+  TestHub: undefined;
+  MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -76,6 +80,14 @@ export const RootNavigator = () => {
           name="Home" 
           component={HomeScreen} 
           options={{ title: 'Feed', headerShown: true }} 
+        />
+        <Stack.Screen 
+          name="TestHub" 
+          component={TestHubScreen} 
+        />
+        <Stack.Screen 
+          name="MainTabs" 
+          component={MainBottomTabs} 
         />
       </Stack.Navigator>
     </NavigationContainer>

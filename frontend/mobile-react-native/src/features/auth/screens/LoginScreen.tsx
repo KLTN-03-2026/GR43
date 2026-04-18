@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ResponseType } from "expo-auth-session";
 import * as Google from "expo-auth-session/providers/google";
 import Constants from "expo-constants";
@@ -9,6 +8,7 @@ import React from "react";
 import {
   ActivityIndicator,
   Alert,
+  Image,
   Platform,
   StyleSheet,
   Text,
@@ -16,9 +16,10 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Svg, { Defs, LinearGradient, Path, Stop } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 import { RootStackParamList } from "../../../app/navigation/RootNavigator";
 import { useAuthStore } from "../../../store/authStore";
+import { AuthBackButton } from "../../../shared/components/AuthBackButton";
 
 const GOOGLE_WEB_CLIENT_ID =
   process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ||
@@ -29,22 +30,6 @@ const GOOGLE_IOS_CLIENT_ID =
 const GOOGLE_ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
 
 WebBrowser.maybeCompleteAuthSession();
-
-const LogoGradientWave = () => (
-  <Svg width="100" height="100" viewBox="0 0 100 100" fill="none">
-    <Defs>
-      <LinearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <Stop offset="0%" stopColor="#F97316" />
-        <Stop offset="50%" stopColor="#E11D48" />
-        <Stop offset="100%" stopColor="#7C3AED" />
-      </LinearGradient>
-    </Defs>
-    <Path
-      d="M50 10C27.9 10 10 27.9 10 50c0 14.5 7.8 27.3 19.5 34.6 2.5-8.5 7-16.1 13-22.1-13-8.5-16.5-23-9-34 9 1 18.5 7.5 22.5 16.5 5-6 10-9.5 16-10.5 4-5 13-7.5 13-7.5C76 16.5 64 10 50 10zM63.5 35.5c-4.5 1.5-8.5 6-12 12.5-4.5 8.5-4.5 19.5 0 28.5C65.5 83.5 81 77 87.5 62c4.5-10.5 2.5-22.5-5-30-2.5-1.5-12.5 2-19 3.5z"
-      fill="url(#grad)"
-    />
-  </Svg>
-);
 
 const GoogleIcon = () => (
   <Svg width="32" height="32" viewBox="0 0 24 24" fill="none">
@@ -155,7 +140,7 @@ export const LoginScreen = () => {
           authData.refreshToken
         );
         console.log("✅ [API] Đăng nhập thành công! Điều hướng về Home...");
-        navigation.replace("Home");
+        navigation.replace("MainTabs");
       } else {
         Alert.alert("Lỗi", data.message || "Đăng nhập thất bại (Invalid structure)");
       }
@@ -209,9 +194,13 @@ export const LoginScreen = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.content}>
+        <View style={styles.backButtonWrapper}>
+          <AuthBackButton onPress={() => navigation.goBack()} />
+        </View>
+
         {/* Logo */}
         <View style={styles.logoContainer}>
-          <LogoGradientWave />
+          <Image source={require('../../../../assets/images/logo.png')} style={styles.logoImage} />
         </View>
 
         {/* Title */}
@@ -223,6 +212,13 @@ export const LoginScreen = () => {
           onPress={() => navigation.navigate("EmailLogin")}
         >
           <Text style={styles.primaryBtnText}>Continue with email</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.testBtn}
+          onPress={() => navigation.navigate('TestHub')}
+        >
+          <Text style={styles.testBtnText}>Test</Text>
         </TouchableOpacity>
 
         {/* Divider */}
@@ -282,7 +278,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: Platform.OS === "ios" ? 20 : 40,
   },
+  backButtonWrapper: {
+    position: "absolute",
+    top: 16,
+    left: 24,
+    zIndex: 10,
+  },
   logoContainer: { marginBottom: 40 },
+  logoImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 24,
+  },
   title: {
     fontSize: 22,
     fontWeight: "700",
@@ -295,9 +302,24 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 16,
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 12,
   },
   primaryBtnText: { color: "#FFFFFF", fontSize: 16, fontWeight: "600" },
+  testBtn: {
+    width: '100%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#EE3F57',
+    paddingVertical: 14,
+    alignItems: 'center',
+    marginBottom: 26,
+  },
+  testBtnText: {
+    color: '#EE3F57',
+    fontSize: 16,
+    fontWeight: '600',
+  },
   dividerContainer: {
     flexDirection: "row",
     alignItems: "center",

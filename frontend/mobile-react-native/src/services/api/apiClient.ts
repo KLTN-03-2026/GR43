@@ -8,8 +8,7 @@ export interface ApiError {
 }
 
 export const apiClient = axios.create({
-  // Fallback to JSONPlaceholder for demo purposes
-  baseURL: process.env.EXPO_PUBLIC_API_URL || 'https://jsonplaceholder.typicode.com',
+  baseURL: process.env.EXPO_PUBLIC_API_BASE_URL || 'https://datn.chessy.dev',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -19,9 +18,10 @@ export const apiClient = axios.create({
 // Request Interceptor: Attach Auth tokens, Log Requests
 apiClient.interceptors.request.use(
   (config) => {
-    // e.g. const token = useAuthStore.getState().token;
-    // if (token) config.headers.Authorization = `Bearer ${token}`; // (example)
-    Logger.debug(`[API RQ] ${config.method?.toUpperCase()} ${config.url}`);
+    Logger.debug(`[API RQ] ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
+    if (config.data) {
+      Logger.debug(`[API RQ Data] ${JSON.stringify(config.data, null, 2)}`);
+    }
     return config;
   },
   (error) => {
@@ -34,6 +34,7 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => {
     Logger.debug(`[API RS] ${response.config.url} - Status: ${response.status}`);
+    Logger.debug(`[API RS Data] ${JSON.stringify(response.data, null, 2)}`);
     return response;
   },
   (error) => {
@@ -43,9 +44,9 @@ apiClient.interceptors.response.use(
     };
     
     Logger.error(`[API RS Error] ${error.config?.url} - ${errorObj.statusCode}: ${errorObj.message}`);
-    
-    // Auto-logout logic on 401 could go here using Zustand's getState()
-    // if (errorObj.statusCode === 401) useAuthStore.getState().logout();
+    if (error.response?.data) {
+      Logger.error(`[API RS Error Detail] ${JSON.stringify(error.response.data, null, 2)}`);
+    }
 
     return Promise.reject(errorObj);
   }

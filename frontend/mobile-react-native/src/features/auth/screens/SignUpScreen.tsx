@@ -25,7 +25,10 @@ export const SignUpScreen = () => {
                     <Text style={styles.title}>Sign up to continue</Text>
 
                     <View style={styles.buttonsStack}>
-                        <TouchableOpacity style={[styles.actionButton, styles.primaryButton]}>
+                        <TouchableOpacity 
+                            style={[styles.actionButton, styles.primaryButton]}
+                            onPress={() => navigation.navigate('EmailSignUp')}
+                        >
                             <Text style={styles.primaryButtonText}>Continue with email</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.actionButton, styles.secondaryButton]}>

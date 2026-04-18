@@ -1,12 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
-using DoAnTotNghiep.Application.Users;
-using DoAnTotNghiep.Application.Auth.ResetPassword;
-using DoAnTotNghiep.Application.Auth.ChangePassword;
-using DoAnTotNghiep.Application.Auth.VerifyEmail;
-using DoAnTotNghiep.Application.Auth.ResendVerification;
-using DoAnTotNghiep.Application.Auth.DeleteAccount;
-using DoAnTotNghiep.Application.Common.Models;
-using DoAnTotNghiep.Application.Users.Commands.Login;
+using DoAnTotNghiep.Application.Auth.VerifyResetToken;
 using MediatR;
 
 namespace DoAnTotNghiep.Web.Controllers;
@@ -52,6 +44,13 @@ public class AuthController : ControllerBase
     {
         await _mediator.Send(request);
         return Ok(ApiResponse<string>.Succeeded(string.Empty, "If the email exists, a reset link has been sent."));
+    }
+
+    [HttpPost("verify-reset-token")]
+    public async Task<IActionResult> VerifyResetToken(VerifyResetTokenCommand request)
+    {
+        var result = await _mediator.Send(request);
+        return Ok(ApiResponse<bool>.Succeeded(result, "Token is valid."));
     }
 
     [HttpPost("reset-password")]

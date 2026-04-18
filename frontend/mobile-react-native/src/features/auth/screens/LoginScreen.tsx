@@ -186,6 +186,13 @@ export const LoginScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <Path d="M15 18l-6-6 6-6" stroke="#111111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </Svg>
+        </TouchableOpacity>
+      </View>
       <View style={styles.content}>
         {/* Logo */}
         <View style={styles.logoContainer}>
@@ -198,12 +205,7 @@ export const LoginScreen = () => {
         {/* Email Button */}
         <TouchableOpacity
           style={styles.primaryBtn}
-          onPress={() =>
-            Alert.alert(
-              "Thông báo",
-              "Tính năng đăng nhập bằng Email đang phát triển"
-            )
-          }
+          onPress={() => navigation.navigate("EmailLogin")}
         >
           <Text style={styles.primaryBtnText}>Continue with email</Text>
         </TouchableOpacity>
@@ -232,6 +234,9 @@ export const LoginScreen = () => {
         <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
           <Text style={styles.footerLink}>Create Account</Text>
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("ForgotPasswordEmail")}>
+          <Text style={styles.footerLink}>Forgot Password?</Text>
+        </TouchableOpacity>
         <TouchableOpacity>
           <Text style={styles.footerLink}>Privacy Policy</Text>
         </TouchableOpacity>
@@ -242,11 +247,25 @@ export const LoginScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FFFFFF" },
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: Platform.OS === "ios" ? 10 : 20,
+    paddingBottom: 10,
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   content: {
     flex: 1,
     alignItems: "center",
     paddingHorizontal: 24,
-    paddingTop: Platform.OS === "ios" ? 60 : 80,
+    paddingTop: Platform.OS === "ios" ? 20 : 40,
   },
   logoContainer: { marginBottom: 40 },
   title: {

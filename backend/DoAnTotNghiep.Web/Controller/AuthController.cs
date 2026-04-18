@@ -26,19 +26,22 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginCommand command)
     {
-        return Ok(await _mediator.Send(command));
+        var response = await _mediator.Send(command);
+        return Ok(ApiResponse<AuthResponse>.Succeeded(response, "Login successful"));
     }
 
     [HttpPost("google-login")]
     public async Task<IActionResult> GoogleLogin(DoAnTotNghiep.Application.Auth.GoogleLogin.GoogleLoginCommand command)
     {
-        return Ok(await _mediator.Send(command));
+        var response = await _mediator.Send(command);
+        return Ok(ApiResponse<AuthResponse>.Succeeded(response, "Google login successful"));
     }
 
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh(RefreshTokenCommand command)
     {
-        return Ok(await _mediator.Send(command));
+        var response = await _mediator.Send(command);
+        return Ok(ApiResponse<AuthResponse>.Succeeded(response, "Token refreshed successfully"));
     }
 
     [HttpPost("register")]
@@ -80,7 +83,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> VerifyEmail(VerifyEmailCommand request)
     {
         var result = await _mediator.Send(request);
-        return Ok(ApiResponse<string>.Succeeded(result, "Email verified successfully."));
+        return Ok(ApiResponse<AuthResponse>.Succeeded(result, "Email verified successfully."));
     }
 
     [HttpPost("resend-verification")]

@@ -1,13 +1,19 @@
 using DoAnTotNghiep.Application.Common;
 using DoAnTotNghiep.Application.Exception;
+using DoAnTotNghiep.Application.Users.Commands.Login;
 using DoAnTotNghiep.Domain.Users;
 using MediatR;
 
 namespace DoAnTotNghiep.Application.Auth.VerifyEmail;
 
-public class Handler(IUserRepository userRepository, ICacheService cache) : IRequestHandler<VerifyEmailCommand, string>
+public class Handler(
+    IUserRepository userRepository, 
+    ICacheService cache, 
+    IJwtService jwtService, 
+    ISessionRepository sessionRepository
+) : IRequestHandler<VerifyEmailCommand, AuthResponse>
 {
-    public async Task<string> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponse> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
     {
         var cacheKey = $"VerifyEmail_{request.Email}";
         var cachedToken = await cache.GetAsync<string>(cacheKey);
@@ -23,10 +29,23 @@ public class Handler(IUserRepository userRepository, ICacheService cache) : IReq
             throw new BadRequestException("User is already verified.");
 
         user.MarkAsVerified();
-        await userRepository.UpdateAsync(user);
         
+        // Generate tokens for auto-login
+        var accessToken = jwtService.GenerateAccessToken(user);
+        var refreshToken = jwtService.GenerateRefreshToken();
+        user.RefreshTokens.Add(refreshToken);
+        
+        // Create session (defaulting some values as they're not available here directly)
+        var session = new Session(user.Id, "VerifiedDevice", "Unknown", "Mobile", null);
+        await sessionRepository.CreateSession(session);
+        
+        await userRepository.UpdateAsync(user);
         await cache.RemoveAsync(cacheKey);
 
-        return "Email verified successfully.";
+        return new AuthResponse
+        {
+            AccessToken = accessToken,
+            RefreshToken = refreshToken.Token
+        };
     }
 }

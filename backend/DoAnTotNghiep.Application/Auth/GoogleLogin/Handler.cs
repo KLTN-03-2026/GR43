@@ -22,9 +22,19 @@ public class GoogleLoginHandler : IRequestHandler<GoogleLoginCommand, AuthRespon
 
     public async Task<AuthResponse> Handle(GoogleLoginCommand request, CancellationToken cancellationToken)
     {
-        var payload = await _googleAuthService.VerifyGoogleTokenAsync(request.IdToken);
+        GoogleJsonWebSignaturePayload? payload = null;
+
+        if (!string.IsNullOrEmpty(request.IdToken))
+        {
+            payload = await _googleAuthService.VerifyGoogleTokenAsync(request.IdToken);
+        }
+        else if (!string.IsNullOrEmpty(request.AccessToken))
+        {
+            payload = await _googleAuthService.VerifyAccessTokenAsync(request.AccessToken);
+        }
+
         if (payload == null)
-            throw new UnauthorizedException("Invalid Google token");
+            throw new UnauthorizedException("Invalid Google token or access token");
 
         var user = await _userRepository.GetByEmail(payload.Email);
 

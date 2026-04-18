@@ -1,5 +1,9 @@
 using DoAnTotNghiep.Application.Common.Models;
+using DoAnTotNghiep.Application.Users.Photos;
+using DoAnTotNghiep.Application.Users.Photos.DeletePhoto;
+using DoAnTotNghiep.Application.Users.Photos.ReorderPhotos;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DoAnTotNghiep.Web.Controllers;
@@ -63,4 +67,27 @@ public class UserController : ControllerBase
         await _mediator.Send(cmdWithUser);
         return Ok(ApiResponse<string>.Succeeded(string.Empty, "Bio updated"));
     }
+    [Authorize]
+    [HttpPost("photos")]
+    public async Task<IActionResult> UploadPhoto(IFormFile file)
+    {
+        var result = await _mediator.Send(new UploadPhotoCommand(file));
+
+        return Ok(result);
+    }
+    [Authorize]
+    [HttpDelete("photos/{photoId}")]
+    public async Task<IActionResult> DeletePhoto(Guid photoId)
+    {
+        await _mediator.Send(new DeletePhotoCommand(photoId));
+        return NoContent();
+    }
+    [Authorize]
+    [HttpPatch("photos/reorder")]
+    public async Task<IActionResult> Reorder(ReoderPhotosCommand command)
+    {
+        await _mediator.Send(command);
+        return NoContent();
+    }
+
 }

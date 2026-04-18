@@ -18,6 +18,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Defs, LinearGradient, Path, Stop } from "react-native-svg";
 import { RootStackParamList } from "../../../app/navigation/RootNavigator";
+import { useAuthStore } from "../../../store/authStore";
 
 const GOOGLE_WEB_CLIENT_ID =
   process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ||
@@ -91,9 +92,9 @@ export const LoginScreen = () => {
       webClientId: GOOGLE_WEB_CLIENT_ID,
       iosClientId: GOOGLE_IOS_CLIENT_ID,
       androidClientId: GOOGLE_ANDROID_CLIENT_ID,
-      responseType: ResponseType.IdToken,
+      responseType: ResponseType.Token,
       shouldAutoExchangeCode: false,
-      scopes: ["profile", "email"],
+      scopes: ["openid", "profile", "email"],
     },
     redirectUriOptions as any
   );
@@ -124,7 +125,9 @@ export const LoginScreen = () => {
     }
   };
 
-  const handleBackendLogin = React.useCallback(async (idToken: string) => {
+  const setAuth = useAuthStore(state => state.setAuth);
+
+  const handleBackendLogin = React.useCallback(async (idToken?: string, accessToken?: string) => {
     try {
       const API_URL = `${
         process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:5017"
@@ -134,19 +137,27 @@ export const LoginScreen = () => {
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken }),
+        body: JSON.stringify({ idToken, accessToken }),
       });
 
       const data = await res.json();
       console.log("📡 [API] Response:", JSON.stringify(data, null, 2));
 
-      if (res.ok && data.data?.accessToken) {
-        await AsyncStorage.setItem("accessToken", data.data.accessToken);
-        await AsyncStorage.setItem("refreshToken", data.data.refreshToken);
+      // Check for data.data because I updated the backend to wrap it in ApiResponse
+      const authData = data.data || (data.accessToken ? data : null);
+      console.log("🔍 [Google] Parsed authData:", JSON.stringify(authData, null, 2));
+
+      if (res.ok && authData && authData.accessToken) {
+        Alert.alert('Success', 'Google login successful!');
+        setAuth(
+          authData.user || { id: authData.userId || '', email: '', username: '' },
+          authData.accessToken, 
+          authData.refreshToken
+        );
         console.log("✅ [API] Đăng nhập thành công! Điều hướng về Home...");
         navigation.replace("Home");
       } else {
-        Alert.alert("Lỗi", data.message || "Đăng nhập thất bại");
+        Alert.alert("Lỗi", data.message || "Đăng nhập thất bại (Invalid structure)");
       }
     } catch (error) {
       console.error("❌ [API] Network error:", error);
@@ -157,7 +168,7 @@ export const LoginScreen = () => {
     } finally {
       setLoading(false);
     }
-  }, [navigation]);
+  }, [navigation, setAuth]);
 
   React.useEffect(() => {
     if (!response) {
@@ -168,13 +179,17 @@ export const LoginScreen = () => {
       const idToken =
         (response as any)?.params?.id_token ||
         (response as any)?.authentication?.idToken;
+      
+      const accessToken = 
+        (response as any)?.params?.access_token ||
+        (response as any)?.authentication?.accessToken;
 
-      if (idToken) {
-        console.log("📨 [Google] idToken nhận được, gửi tới Backend...");
-        handleBackendLogin(idToken);
+      if (idToken || accessToken) {
+        console.log("📨 [Google] Token nhận được, gửi tới Backend...");
+        handleBackendLogin(idToken, accessToken);
       } else {
         setLoading(false);
-        Alert.alert("Lỗi Đăng Nhập", "Không nhận được idToken từ Google.");
+        Alert.alert("Lỗi Đăng Nhập", "Không nhận được token từ Google.");
       }
     } else if (response.type === "error") {
       setLoading(false);
@@ -186,6 +201,13 @@ export const LoginScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <Path d="M15 18l-6-6 6-6" stroke="#111111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </Svg>
+        </TouchableOpacity>
+      </View>
       <View style={styles.content}>
         {/* Logo */}
         <View style={styles.logoContainer}>
@@ -198,12 +220,7 @@ export const LoginScreen = () => {
         {/* Email Button */}
         <TouchableOpacity
           style={styles.primaryBtn}
-          onPress={() =>
-            Alert.alert(
-              "Thông báo",
-              "Tính năng đăng nhập bằng Email đang phát triển"
-            )
-          }
+          onPress={() => navigation.navigate("EmailLogin")}
         >
           <Text style={styles.primaryBtnText}>Continue with email</Text>
         </TouchableOpacity>
@@ -232,6 +249,9 @@ export const LoginScreen = () => {
         <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
           <Text style={styles.footerLink}>Create Account</Text>
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("ForgotPasswordEmail")}>
+          <Text style={styles.footerLink}>Forgot Password?</Text>
+        </TouchableOpacity>
         <TouchableOpacity>
           <Text style={styles.footerLink}>Privacy Policy</Text>
         </TouchableOpacity>
@@ -242,11 +262,25 @@ export const LoginScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FFFFFF" },
+  header: {
+    paddingHorizontal: 24,
+    paddingTop: Platform.OS === "ios" ? 10 : 20,
+    paddingBottom: 10,
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   content: {
     flex: 1,
     alignItems: "center",
     paddingHorizontal: 24,
-    paddingTop: Platform.OS === "ios" ? 60 : 80,
+    paddingTop: Platform.OS === "ios" ? 20 : 40,
   },
   logoContainer: { marginBottom: 40 },
   title: {

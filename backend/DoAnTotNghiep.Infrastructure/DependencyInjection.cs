@@ -2,12 +2,13 @@ using DoAnTotNghiep.Application.Common;
 using DoAnTotNghiep.Application.Email;
 using DoAnTotNghiep.Domain.Token;
 using DoAnTotNghiep.Infrastructure.Persistence;
+using DoAnTotNghiep.Infrastructure.Persistence.Email.Template;
+using DoAnTotNghiep.Infrastructure.Persistence.Storage;
+using DoAnTotNghiep.Infrastructure.Repositories;
 using DoAnTotNghiep.Infrastructure.Security;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Caching.Memory;
-using DoAnTotNghiep.Infrastructure.Persistence.Email.Template;
-using DoAnTotNghiep.Infrastructure.Repositories;
 
 namespace DoAnTotNghiep.Infrastructure;
 
@@ -38,6 +39,11 @@ public static class DependencyInjection
         });
         var smtpSettings = configuration.GetSection("Smtp");
         services.Configure<EmailSettings>(smtpSettings);
+
+
+        var r2 = configuration.GetSection("CloudflareR2").Get<R2Settings>();
+        services.AddSingleton(r2);
+        services.AddScoped<IFileStorageService,R2StorageService>();
 
         return services;
     }

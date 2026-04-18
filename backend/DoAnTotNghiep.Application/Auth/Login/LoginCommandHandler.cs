@@ -35,17 +35,16 @@ namespace DoAnTotNghiep.Application.Users.Commands.Login
 
             var accessToken = _jwt.GenerateAccessToken(user);
             var refreshToken = _jwt.GenerateRefreshToken();
-            user.RefreshTokens.Add(refreshToken);
-            var deviceId = request.DeviceId;
-            var platform = request.Platform;
-            var ipAddress = request.IPAddress;
-            var fcmToken = request.PushToken;
-            var session = new Session(user.Id, deviceId, ipAddress, platform, fcmToken)
-            {
-                IsRevoked = false
-            };
+
+            var session = new Session(
+                user.Id,
+                request.DeviceId,
+                request.IPAddress,
+                request.Platform,
+                request.PushToken,
+                refreshToken
+            );
             await _sessionRepo.CreateSession(session);
-            await _repo.UpdateAsync(user);
             return new AuthResponse
             {
                 AccessToken = accessToken,

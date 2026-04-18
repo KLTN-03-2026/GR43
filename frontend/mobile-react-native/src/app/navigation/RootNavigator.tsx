@@ -1,16 +1,18 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, NavigatorScreenParams } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { HomeScreen } from '../../features/home/screens/HomeScreen';
 import { OnboardingScreen } from '../../features/onboarding/screens/OnboardingScreen';
 import { LoginScreen } from '../../features/auth/screens/LoginScreen';
 import { SignUpScreen } from '../../features/auth/screens/SignUpScreen';
+import { TestHubScreen } from '../../features/core/screens/TestHubScreen';
+import { MainBottomTabs, MainTabParamList } from './MainBottomTabs';
 
 export type RootStackParamList = {
   Onboarding: undefined;
   Login: undefined;
   SignUp: undefined;
-  Home: undefined;
+  TestHub: undefined;
+  MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -37,9 +39,12 @@ export const RootNavigator = () => {
           component={SignUpScreen} 
         />
         <Stack.Screen 
-          name="Home" 
-          component={HomeScreen} 
-          options={{ title: 'Feed', headerShown: true }} 
+          name="TestHub" 
+          component={TestHubScreen} 
+        />
+        <Stack.Screen 
+          name="MainTabs" 
+          component={MainBottomTabs} 
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -1,3 +1,12 @@
+using Microsoft.AspNetCore.Mvc;
+using DoAnTotNghiep.Application.Users;
+using DoAnTotNghiep.Application.Auth.ResetPassword;
+using DoAnTotNghiep.Application.Auth.ChangePassword;
+using DoAnTotNghiep.Application.Auth.VerifyEmail;
+using DoAnTotNghiep.Application.Auth.ResendVerification;
+using DoAnTotNghiep.Application.Auth.DeleteAccount;
+using DoAnTotNghiep.Application.Common.Models;
+using DoAnTotNghiep.Application.Users.Commands.Login;
 using DoAnTotNghiep.Application.Auth.VerifyResetToken;
 using MediatR;
 

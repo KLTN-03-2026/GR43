@@ -8,6 +8,7 @@ namespace DoAnTotNghiep.Application.Common
 {
     public interface IFileStorageService
     {
+        Task DeleteAsync(string url);
         Task<string> UploadAsync(Stream stream, string key, string contentType);
     }
 }

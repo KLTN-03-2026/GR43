@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace DoAnTotNghiep.Application.Users.Photos.DeletePhoto
 {
-    public record Command(Guid PhotoId) : IRequest;
+    public record DeletePhotoCommand(Guid PhotoId) : IRequest;
 }

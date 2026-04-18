@@ -25,6 +25,38 @@ namespace DoAnTotNghiep.Infrastructure.Persistence.Storage
                 config);
         }
 
+        public async Task DeleteAsync(string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                return;
+
+            var key = ExtractKeyFromUrl(url);
+
+            var request = new DeleteObjectRequest
+            {
+                BucketName = _settings.BucketName,
+                Key = key
+            };
+
+            await _s3.DeleteObjectAsync(request);
+        }
+
+        private string ExtractKeyFromUrl(string url)
+        {
+            var baseUrl = _settings.PublicBaseUrl.TrimEnd('/');
+
+            if (url.StartsWith(baseUrl,
+                StringComparison.OrdinalIgnoreCase))
+            {
+                return url.Substring(baseUrl.Length)
+                          .TrimStart('/');
+            }
+
+            var uri = new Uri(url);
+
+            return uri.AbsolutePath.TrimStart('/');
+        }
+
         public async Task<string> UploadAsync(Stream stream, string key, string contentType)
         {
             var request = new PutObjectRequest

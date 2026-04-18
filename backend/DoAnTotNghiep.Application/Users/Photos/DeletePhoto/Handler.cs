@@ -5,7 +5,7 @@ using MediatR;
 
 namespace DoAnTotNghiep.Application.Users.Photos.DeletePhoto
 {
-    public class Handler : IRequestHandler<Command>
+    public class Handler : IRequestHandler<DeletePhotoCommand>
     {
         private readonly IUserProfileRepository _repo;
         private readonly ICurrentUserService _current;
@@ -21,7 +21,7 @@ namespace DoAnTotNghiep.Application.Users.Photos.DeletePhoto
             _cache = cache;
         }
 
-        public async Task Handle(Command request, CancellationToken cancellationToken)
+        public async Task Handle(DeletePhotoCommand request, CancellationToken cancellationToken)
         {
             var userId = _current.UserId;
             var profile = await _repo.GetByUserIdAsync(Guid.TryParse(userId, out var guid) ? guid : throw new ArgumentNullException());
@@ -36,7 +36,6 @@ namespace DoAnTotNghiep.Application.Users.Photos.DeletePhoto
                 throw new NotFoundException("Photo not found");
 
             await _storage.DeleteAsync(photo.Url);
-            await _storage.DeleteAsync(photo.ThumbnailUrl);
 
             profile.Photos.Remove(photo);
 
@@ -50,7 +49,7 @@ namespace DoAnTotNghiep.Application.Users.Photos.DeletePhoto
                 profile.Photos[i].Order = i;
             }
 
-            await _repo.Update(profile);
+            await _repo.UpdateAsync(profile);
 
             await _cache.RemoveAsync(
                 $"user:{userId}:photos");
